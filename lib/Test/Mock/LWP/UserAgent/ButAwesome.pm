@@ -6,6 +6,7 @@ use warnings;
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);
 use re 'is_regexp';
+use Storable 'freeze';
 
 # GLOBALS
 
@@ -21,6 +22,11 @@ sub new
     $self->{__last_http_request_sent} = undef;
     $self->{__last_http_response_received} = undef;
     $self->{__response_map} = [];
+
+    # strips default User-Agent header added by LWP::UserAgent, to make it
+    # easier to define literal HTTP::Requests to match against
+    $self->agent(undef) if defined $self->agent and $self->agent eq $self->_agent;
+
     return $self;
 }
 

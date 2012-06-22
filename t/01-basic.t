@@ -1,9 +1,10 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 12;
+use Test::More tests => 23;
 use Test::NoWarnings 1.04 ':early';
 use Test::Deep;
+use Storable 'freeze';
 
 # simulates real code that we are testing
 {
@@ -24,11 +25,14 @@ use Test::Deep;
 
         my $uri = URI->new($base_url);
         $uri->port($port);
-        $uri->query_form(%params) if keys %params;
+        $uri->query_form(%params) if keys %params and $method eq 'GET';
         $uri->path($path);
 
         my $request_sub = HTTP::Request::Common->can($method);
-        my $request = $request_sub->($uri);
+        my $request = $request_sub->(
+            $uri,
+            $method eq 'POST' ? \%params : (),
+        );
 
         my $response = $useragent->request($request);
     }
@@ -67,31 +71,41 @@ cmp_deeply(
 
 # class methods
 {
-    $class->map_response(
-        'http://foo:3001/success?a=1', HTTP::Response->new(201, 'OK', ['Content-Type' => 'text/plain'], ''));
-    $class->map_response(
-        qr{foo.+success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
-    $class->map_response(
-        qr{foo.+fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
+    $class->map_response('http://foo:3001/success?a=1', HTTP::Response->new(201));
+    $class->map_response(qr{foo.+success}, HTTP::Response->new(200));
+    $class->map_response(qr{foo.+fail}, HTTP::Response->new(500));
+    $class->map_response(sub { shift->method eq 'HEAD' }, HTTP::Response->new(304));
+    $class->map_response(HTTP::Request->new('DELETE', 'http://foo:3003/blah'), HTTP::Response->new(202));;
 
     $MyApp::useragent = $class->new;
 
     foreach my $test (
-        [ 'regexp success', 'POST', 'http://foo', 3000, 'success', { a => 1 },
-            str('http://foo:3000/success?a=1'), 200 ],
+        [ 'regexp success', 'GET', 'http://foo', 3000, 'success', { a => 1 },
+            str('http://foo:3000/success?a=1'), '', 200 ],
         [ 'regexp fail', 'POST', 'http://foo', 3000, 'fail', { a => 1 },
-            str('http://foo:3000/fail?a=1'), 500 ],
-        [ 'string success', 'POST', 'http://foo', 3001, 'success', { a => 1 },
-            str('http://foo:3001/success?a=1'), 201 ],
-
+            str('http://foo:3000/fail'), 'a=1', 500 ],
+        [ 'string success', 'GET', 'http://foo', 3001, 'success', { a => 1 },
+            str('http://foo:3001/success?a=1'), '', 201 ],
+        [ 'subref redirect', 'HEAD', 'http://foo',  3002, 'blah', {},
+            str('http://foo:3002/blah'), '', 304 ],
+        [ 'literal object', 'DELETE', 'http://foo', 3003, 'blah', {},
+            str('http://foo:3003/blah'), '', 202 ],
     )
     {
-        my ($name, $method, $uri_base, $port, $path, $params, $expected_uri, $expected_code) = @$test;
+        my ($name, $method, $uri_base, $port, $path, $params,
+            $expected_uri, $expected_content, $expected_code) = @$test;
+
+        note "\n", $name;
 
         my $response = MyApp->send_to_url($method, $uri_base, $port, $path, %$params);
 
         # response is what we stored in the useragent
         isa_ok($response, 'HTTP::Response');
+        is(
+            freeze($class->last_http_response_received),
+            freeze($response),
+            'last_http_response_received',
+        );
 
         cmp_deeply(
             $class->last_http_request_sent,
@@ -108,11 +122,9 @@ cmp_deeply(
             $response,
             methods(
                 code => $expected_code,
-                [ header => 'Content-Type' ] => 'text/plain',
             ),
             "$name response",
         );
-
     }
 
 }
