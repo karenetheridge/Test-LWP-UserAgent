@@ -137,7 +137,7 @@ In your real code:
     use HTTP::Request::Common;
     use LWP::UserAgent;
 
-    my $uri = URI->new('http://foo');
+    my $uri = URI->new('http://example.com');
     $uri->port(3000);
     $uri->query_form(a => 1);
     $uri->path('success');
@@ -157,9 +157,9 @@ Then, in your tests:
     # <something which calls the code being tested...>
 
     my $last_request = Test::Mock::LWP::UserAgent::ButAwesome->last_http_request_sent;
-    is($last_request->uri, 'http://foo/success:3000', 'URI');
+    is($last_request->uri, 'http://example.com/success:3000', 'URI');
     is($last_request->content, 'a=1', 'POST content');
-    
+
     # <now test that your code responded to the 200 response properly...>
 
 
@@ -185,7 +185,7 @@ The string is matched identically against the URI in the request.
 
 Example:
 
-    $mock_ua->map('http://host/path', HTTP::Response->new(500));
+    $mock_ua->map('http://example.com/path', HTTP::Response->new(500));
 
 =item regexp
 
@@ -252,7 +252,7 @@ All other methods from L<LWP::UserAgent> are available unchanged.
 
 =head1 MOTIVATION
 
-Most mock libraries on the CPAN use L<Test::Mock>, which is widely considered
+Most mock libraries on the CPAN use L<Test::MockObject>, which is widely considered
 not good practice (among other things, C<@ISA> is violated, it requires
 knowing far too much about the module's internals, and is very clumsy to work
 with).
@@ -262,7 +262,7 @@ your namespace, and all access is via method calls, so it is fully inheritable
 should you desire to add more features or override some bits of functionality.
 
 It only overrides the one method in L<LWP::UserAgent> that issues calls to the
-network, so real L<HTTP::Request> and L<HTTP::Header> objects are used
+network, so real L<HTTP::Request> and L<HTTP::Headers> objects are used
 throughout. It provides a method (C<last_http_request_sent>) to access the last
 L<HTTP::Request>, for testing things like the URI and headers that your code
 sent to L<LWP::UserAgent>.

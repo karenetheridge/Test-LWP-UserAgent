@@ -1,0 +1,6 @@
+Revision history for {{$dist->name}}
+
+{{$NEXT}}
+          - Initial release, in all its questionable glory.
+
+
