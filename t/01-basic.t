@@ -1,7 +1,7 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 23;
+use Test::More tests => 36;
 use Test::NoWarnings 1.04 ':early';
 use Test::Deep;
 use Storable 'freeze';
@@ -96,6 +96,50 @@ cmp_deeply(
     }
 }
 
+# object methods
+{
+    $MyApp::useragent = $class->new;
+
+    cmp_deeply(
+        $MyApp::useragent,
+        all(
+            isa($class),
+            isa('LWP::UserAgent'),
+            methods(
+                last_http_request_sent => undef,
+                last_http_response_received => undef,
+            ),
+            noclass(superhashof({
+                __last_http_request_sent => undef,
+                __last_http_response_received => undef,
+                __response_map => [],
+            })),
+        ),
+        'initial state of object after sending requests with another instance',
+    );
+
+    # create one new mapping on this instance, and confirm it takes priority
+    $MyApp::useragent->map_response(qr{foo.+fail}, HTTP::Response->new(401));
+    test_send_request(
+        'regexp fail', 'POST', 'http://foo', 3000, 'fail', { a => 1 },
+            str('http://foo:3000/fail'), 'a=1', 401,  # globally, returning 500
+    );
+
+    $MyApp::useragent->unmap_all('this_instance_only');
+
+    test_send_request(
+        'global mappings are still in effect', 'GET', 'http://foo', 3000, 'success', { a => 1 },
+            str('http://foo:3000/success?a=1'), '', 200,
+    );
+
+    $MyApp::useragent->unmap_all;
+
+    test_send_request(
+        'all mappings are now gone', 'GET', 'http://foo', 3000, 'success', { a => 1 },
+            str('http://foo:3000/success?a=1'), '', 404,
+    );
+}
+
 sub test_send_request
 {
     my ($name, $method, $uri_base, $port, $path, $params,
@@ -134,5 +178,4 @@ sub test_send_request
         "$name response",
     );
 }
-
 

@@ -49,11 +49,12 @@ sub map_response
 
 sub unmap_all
 {
-    my $self = shift;
+    my ($self, $instance_only) = @_;
 
     if (blessed $self)
     {
         $self->{__response_map} = [];
+        @response_map = () if not $instance_only;
     }
     else
     {
@@ -214,10 +215,15 @@ parameters, headers etc) against the provided object.
 
 =back
 
-=item unmap_all
+=item unmap_all(instance_only?)
 
-Removes all mappings for this object (if called on an object), or globally (if
-called as a class method).
+When called as a class method, removes all mappings set up globally (across all
+objects). Some mappings set up on an individual object may still remain.
+
+When called as an object method, removes I<all> mappings both globally and on
+this instance, unless a true value is passed as an argument, in which only
+mappings local to the object will be removed. (Any true value will do, so you
+can pass a meaningful string.)
 
 =item last_http_request_sent
 
