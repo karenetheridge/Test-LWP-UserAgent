@@ -92,41 +92,47 @@ cmp_deeply(
             str('http://foo:3003/blah'), '', 202 ],
     )
     {
-        my ($name, $method, $uri_base, $port, $path, $params,
-            $expected_uri, $expected_content, $expected_code) = @$test;
-
-        note "\n", $name;
-
-        my $response = MyApp->send_to_url($method, $uri_base, $port, $path, %$params);
-
-        # response is what we stored in the useragent
-        isa_ok($response, 'HTTP::Response');
-        is(
-            freeze($class->last_http_response_received),
-            freeze($response),
-            'last_http_response_received',
-        );
-
-        cmp_deeply(
-            $class->last_http_request_sent,
-            all(
-                isa('HTTP::Request'),
-                methods(
-                    uri => $expected_uri,
-                ),
-            ),
-            "$name request",
-        );
-
-        cmp_deeply(
-            $response,
-            methods(
-                code => $expected_code,
-            ),
-            "$name response",
-        );
+        test_send_request(@$test);
     }
+}
 
+sub test_send_request
+{
+    my ($name, $method, $uri_base, $port, $path, $params,
+        $expected_uri, $expected_content, $expected_code) = @_;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    note "\n", $name;
+
+    my $response = MyApp->send_to_url($method, $uri_base, $port, $path, %$params);
+
+    # response is what we stored in the useragent
+    isa_ok($response, 'HTTP::Response');
+    is(
+        freeze($MyApp::useragent->last_http_response_received),
+        freeze($response),
+        'last_http_response_received',
+    );
+
+    cmp_deeply(
+        $MyApp::useragent->last_http_request_sent,
+        all(
+            isa('HTTP::Request'),
+            methods(
+                uri => $expected_uri,
+            ),
+        ),
+        "$name request",
+    );
+
+    cmp_deeply(
+        $response,
+        methods(
+            code => $expected_code,
+        ),
+        "$name response",
+    );
 }
 
 
