@@ -269,6 +269,17 @@ throughout. It provides a method (C<last_http_request_sent>) to access the last
 L<HTTP::Request>, for testing things like the URI and headers that your code
 sent to L<LWP::UserAgent>.
 
+=head1 TODO
+
+=over 4
+
+=item Integration with L<PSGI> and L<HTTP::Message::PSGI>
+
+=item Option to locally or globally override useragent implementations via
+symbol table swap
+
+=back
+
 =head1 ACKNOWLEDGEMENTS
 
 L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
