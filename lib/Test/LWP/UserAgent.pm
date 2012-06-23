@@ -135,11 +135,13 @@ In your real code:
     use HTTP::Request::Common;
     use LWP::UserAgent;
 
+    my $ua = $self->useragent || LWP::UserAgent->new;
+
     my $uri = URI->new('http://example.com');
     $uri->port(3000);
     $uri->path('success');
     my $request = POST($uri, a => 1);
-    my $response = LWP::UserAgent->new->request($request);
+    my $response = $ua->request($request);
 
 Then, in your tests:
 
@@ -159,6 +161,9 @@ Then, in your tests:
 
     # <now test that your code responded to the 200 response properly...>
 
+One common mechanism to swap out the useragent implementation is via a
+lazily-built Moose attribute; if no override is provided at construction time,
+default to C<LWP::UserAgent->new(%options)>.
 
 =head1 METHODS
 
