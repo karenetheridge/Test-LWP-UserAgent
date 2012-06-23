@@ -8,8 +8,6 @@ use Scalar::Util qw(blessed reftype);
 use re 'is_regexp';
 use Storable 'freeze';
 
-# GLOBALS
-
 my $last_http_request_sent;
 my $last_http_response_received;
 my @response_map;
