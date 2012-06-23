@@ -19,3 +19,4 @@ nytprof*
 !.gitignore
 *.sw*
 /Test-Mock-LWP-UserAgent-*
+/Test-LWP-UserAgent-*
