@@ -264,13 +264,6 @@ throughout. It provides a method (C<last_http_request_sent>) to access the last
 L<HTTP::Request>, for testing things like the URI and headers that your code
 sent to L<LWP::UserAgent>.
 
-=head1 THE NAME
-
-Yes, the name of this module is a little.. juvenile, however all the good names
-are already taken! It may change in the future to something more sensible, in
-which case one final release will be made under the old name to redirect to the
-new name.
-
 =head1 ACKNOWLEDGEMENTS
 
 L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
