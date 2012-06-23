@@ -260,7 +260,7 @@ This module is a direct descendant of L<LWP::UserAgent>, exports nothing into
 your namespace, and all access is via method calls, so it is fully inheritable
 should you desire to add more features or override some bits of functionality.
 
-It only overrides the one method in L<LWP::UserAgent> that issues calls to the
+(Aside from the constructor), it only overrides the one method in L<LWP::UserAgent> that issues calls to the
 network, so real L<HTTP::Request> and L<HTTP::Headers> objects are used
 throughout. It provides a method (C<last_http_request_sent>) to access the last
 L<HTTP::Request>, for testing things like the URI and headers that your code
