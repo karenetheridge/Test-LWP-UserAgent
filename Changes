@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002     2012-06-23 09:36:51 PDT-0700 (Karen Etheridge)
           - minor documentation fixes
           - renamed from Test::Mock::LWP::UserAgent to Test::LWP::UserAgent
             (thanks, mst!)
