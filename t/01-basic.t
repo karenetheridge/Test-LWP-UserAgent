@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Test::More tests => 36;
 use Test::NoWarnings 1.04 ':early';
-use Test::Deep;
+use Test::Deep 0.110;
 use Storable 'freeze';
 
 # simulates real code that we are testing
