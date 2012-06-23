@@ -139,9 +139,8 @@ In your real code:
 
     my $uri = URI->new('http://example.com');
     $uri->port(3000);
-    $uri->query_form(a => 1);
     $uri->path('success');
-    my $request = POST($uri);
+    my $request = POST($uri, a => 1);
     my $response = LWP::UserAgent->new->request($request);
 
 Then, in your tests:
