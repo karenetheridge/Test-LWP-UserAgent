@@ -278,6 +278,9 @@ new name.
 
 L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
 
+mst - Matt S. Trout <mst@shadowcat.co.uk>, for kicking me in the posterior
+about my previous bad testing practices.
+
 Also Yury Zavarin, whose L<Test::Mock::LWP::Dispatch> inspired me to write this
 module, and from where I borrowed some aspects of the API.
 
