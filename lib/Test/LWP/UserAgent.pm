@@ -182,7 +182,7 @@ The string is matched identically against the URI in the request.
 
 Example:
 
-    $mock_ua->map('http://example.com/path', HTTP::Response->new(500));
+    $test_ua->map('http://example.com/path', HTTP::Response->new(500));
 
 =item regexp
 
@@ -190,15 +190,15 @@ The regexp is matched against the URI in the request.
 
 Example:
 
-    $mock_ua->map(qr{path1}, HTTP::Response->new(200));
-    $mock_ua->map(qr{path2}, HTTP::Response->new(500));
+    $test_ua->map(qr{path1}, HTTP::Response->new(200));
+    $test_ua->map(qr{path2}, HTTP::Response->new(500));
 
 =item code
 
 An arbitrary coderef is passed a single argument, the L<HTTP::Request>, and
 returns a boolean indicating if there is a match.
 
-    $mock_ua->map(sub {
+    $test_ua->map(sub {
             my $request = shift;
             return 1 if $request->method eq 'GET' || $request->method eq 'POST';
         },
