@@ -287,9 +287,11 @@ L<Test::Mock::LWP::Dispatch>
 L<Test::Mock::LWP::UserAgent>
 L<LWP::UserAgent>
 
-=head1 COPYRIGHT AND LICENSE
+=head1 COPYRIGHT
 
 This software is copyright (c) 2012 by Karen Etheridge.
+
+=head1 LICENSE
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
