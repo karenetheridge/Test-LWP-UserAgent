@@ -1,4 +1,4 @@
-package Test::Mock::LWP::UserAgent::ButAwesome;
+package Test::LWP::UserAgent;
 
 use strict;
 use warnings;
@@ -125,7 +125,7 @@ __END__
 
 =head1 NAME
 
-Test::Mock::LWP::Dispatch::ButAwesome - a LWP::UserAgent suitable for simulating and testing network calls
+Test::LWP::Dispatch - a LWP::UserAgent suitable for simulating and testing network calls
 
 =head1 SYNOPSIS
 
@@ -143,17 +143,17 @@ In your real code:
 
 Then, in your tests:
 
-    use Test::Mock::LWP::UserAgent::ButAwesome;
+    use Test::LWP::UserAgent;
     use Test::More;
 
-    Test::Mock::LWP::UserAgent::ButAwesome->map_response(
+    Test::LWP::UserAgent->map_response(
         qr{foo/success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
-    Test::Mock::LWP::UserAgent::ButAwesome->map_response(
+    Test::LWP::UserAgent->map_response(
         qr{foo/fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
 
     # <something which calls the code being tested...>
 
-    my $last_request = Test::Mock::LWP::UserAgent::ButAwesome->last_http_request_sent;
+    my $last_request = Test::LWP::UserAgent->last_http_request_sent;
     is($last_request->uri, 'http://example.com/success:3000', 'URI');
     is($last_request->content, 'a=1', 'POST content');
 

@@ -38,8 +38,8 @@ use Storable 'freeze';
     }
 }
 
-use Test::Mock::LWP::UserAgent::ButAwesome;
-my $class = 'Test::Mock::LWP::UserAgent::ButAwesome';
+use Test::LWP::UserAgent;
+my $class = 'Test::LWP::UserAgent';
 
 cmp_deeply(
     $class,
