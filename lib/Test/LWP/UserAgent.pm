@@ -5,7 +5,6 @@ use warnings;
 
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);
-use re 'is_regexp';
 use Storable 'freeze';
 
 my $last_http_request_sent;
@@ -76,6 +75,8 @@ sub last_http_response_received
         : $last_http_response_received;
 }
 
+sub __is_regexp($);
+
 sub send_request
 {
     my ($self, $request) = @_;
@@ -101,7 +102,7 @@ sub send_request
             $matched_response = $response and last
                 if $request_desc->($request);
         }
-        elsif (is_regexp $request_desc)
+        elsif (__is_regexp $request_desc)
         {
             $matched_response = $response and last
                 if $request->uri =~ $request_desc;
@@ -116,6 +117,11 @@ sub send_request
 
     $last_http_response_received = $self->{__last_http_response_received} =
         ($matched_response || HTTP::Response->new(404));
+}
+
+sub __is_regexp($)
+{
+    $^V < 5.009005 ? ref(shift) eq 'Regexp' : re::is_regexp(shift);
 }
 
 1;

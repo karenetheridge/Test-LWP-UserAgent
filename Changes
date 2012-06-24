@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - fix compile error on perls earlier than 5.9.5 (which did not have
+            re::is_regexp)
 
 0.002     2012-06-23 09:36:51 PDT-0700 (Karen Etheridge)
           - minor documentation fixes
