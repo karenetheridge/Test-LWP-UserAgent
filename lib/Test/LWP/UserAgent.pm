@@ -299,7 +299,9 @@ module, and from where I borrowed some aspects of the API.
 =head1 SEE ALSO
 
 L<Test::Mock::LWP::Dispatch>
+
 L<Test::Mock::LWP::UserAgent>
+
 L<LWP::UserAgent>
 
 =head1 COPYRIGHT
