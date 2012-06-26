@@ -306,7 +306,7 @@ L<LWP::UserAgent>
 
 =head1 COPYRIGHT
 
-This software is copyright (c) 2012 by Karen Etheridge.
+This software is copyright (c) 2012 by Karen Etheridge, <ether@cpan.org>.
 
 =head1 LICENSE
 
