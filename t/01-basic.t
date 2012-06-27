@@ -1,7 +1,7 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 36;
+use Test::More tests => 44;
 use Test::NoWarnings 1.04 ':early';
 use Test::Deep 0.110;
 use Storable 'freeze';
@@ -75,7 +75,9 @@ cmp_deeply(
     $class->map_response(qr{foo.+success}, HTTP::Response->new(200));
     $class->map_response(qr{foo.+fail}, HTTP::Response->new(500));
     $class->map_response(sub { shift->method eq 'HEAD' }, HTTP::Response->new(304));
-    $class->map_response(HTTP::Request->new('DELETE', 'http://foo:3003/blah'), HTTP::Response->new(202));;
+    $class->map_response(HTTP::Request->new('DELETE', 'http://foo:3003/blah'), HTTP::Response->new(202));
+    $class->map_response(qr{conditional},
+        sub { HTTP::Response->new(shift->uri =~ /success/ ? 200 : 550) });
 
     $MyApp::useragent = $class->new;
 
@@ -90,6 +92,10 @@ cmp_deeply(
             str('http://foo:3002/blah'), '', 304 ],
         [ 'literal object', 'DELETE', 'http://foo', 3003, 'blah', {},
             str('http://foo:3003/blah'), '', 202 ],
+        [ 'response is coderef (success)', 'GET', 'http://conditional', 3004, 'success', {},
+            str('http://conditional:3004/success'), '', 200 ],
+        [ 'response is coderef (fail)', 'GET', 'http://conditional', 3004, 'fail', {},
+            str('http://conditional:3004/fail'), '', 550 ],
     )
     {
         test_send_request(@$test);
@@ -153,6 +159,7 @@ sub test_send_request
 
     # response is what we stored in the useragent
     isa_ok($response, 'HTTP::Response');
+
     is(
         freeze($MyApp::useragent->last_http_response_received),
         freeze($response),

@@ -32,7 +32,8 @@ sub map_response
     my ($self, $request_description, $response) = @_;
 
     warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
-        if not (blessed($response) and $response->isa('HTTP::Response'));
+        if not (ref $response eq 'CODE' or
+            blessed($response) and $response->isa('HTTP::Response'));
 
     if (blessed($self))
     {
@@ -117,6 +118,12 @@ sub send_request
 
     $last_http_response_received = $self->{__last_http_response_received} =
         ($matched_response || HTTP::Response->new(404));
+
+    $last_http_response_received = $self->{__last_http_response_received} =
+            $last_http_response_received->($request)
+        if ref $last_http_response_received eq 'CODE';
+
+    return $last_http_response_received;
 }
 
 sub __is_regexp($)
@@ -158,6 +165,18 @@ Then, in your tests:
         qr{foo/success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
         qr{foo/fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
+    Test::LWP::UserAgent->map_response(
+        qr{foo/conditional},
+        sub {
+            my $request = shift;
+            my $success = $request->uri =~ /success/;
+            return HTTP::Response->new(
+                ($success ? ( 200, 'OK') : (500, 'ERROR'),
+                ['Content-Type' => 'text/plain'], '')
+            )
+        },
+    );
+
 
     # <something which calls the code being tested...>
 
@@ -183,7 +202,9 @@ global.
 =item map_response($request_description, $http_response)
 
 With this method, you set up what L<HTTP::Response> should be returned for each
-request received. The request can be described in multiple ways:
+request received.
+
+The request can be described in multiple ways:
 
 =over 4
 
@@ -222,6 +243,19 @@ The L<HTTP::Request> object is matched identically (including all query
 parameters, headers etc) against the provided object.
 
 =back
+
+The response can be represented either as a literal L<HTTP::Request> object, or
+as a coderef that is run at the time of matching, with the request passed as
+the single argument:
+
+    HTTP::Response->new(...);
+
+or
+
+    sub {
+        my $request = shift;
+        HTTP::Response->new(...);
+    }
 
 =item unmap_all(instance_only?)
 

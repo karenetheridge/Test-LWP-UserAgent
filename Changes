@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - map_response now accepts a coderef in place of the HTTP::Response
+            object to return, to allow basing the response data on what was in
+            the request
 
 0.003     2012-06-23 22:11:53 PDT-0700 (Karen Etheridge)
           - fix compile error on perls earlier than 5.9.5 (which did not have
