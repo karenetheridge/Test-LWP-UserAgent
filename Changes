@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.004     2012-06-27 15:41:02 PDT-0700 (Karen Etheridge)
           - map_response now accepts a coderef in place of the HTTP::Response
             object to return, to allow basing the response data on what was in
             the request
