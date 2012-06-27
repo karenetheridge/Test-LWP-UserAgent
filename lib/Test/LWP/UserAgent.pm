@@ -32,7 +32,7 @@ sub map_response
     my ($self, $request_description, $response) = @_;
 
     warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
-        if not blessed($response) and $response->isa('HTTP::Response');
+        if not (blessed($response) and $response->isa('HTTP::Response'));
 
     if (blessed($self))
     {
