@@ -119,9 +119,15 @@ sub send_request
     $last_http_response_received = $self->{__last_http_response_received} =
         ($matched_response || HTTP::Response->new(404));
 
-    $last_http_response_received = $self->{__last_http_response_received} =
-            $last_http_response_received->($request)
-        if ref $last_http_response_received eq 'CODE';
+    if (ref $last_http_response_received eq 'CODE')
+    {
+        $last_http_response_received = $self->{__last_http_response_received} =
+                $last_http_response_received->($request);
+
+        warn "response from coderef is not a HTTP::Response, it's a ",
+            blessed($last_http_response_received)
+                if not (blessed($last_http_response_received) and $last_http_response_received->isa('HTTP::Response'));
+    }
 
     return $last_http_response_received;
 }
