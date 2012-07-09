@@ -6,6 +6,7 @@ use warnings;
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);
 use Storable 'freeze';
+use HTTP::Date;
 
 my $last_http_request_sent;
 my $last_http_response_received;
@@ -81,9 +82,11 @@ sub send_request
 {
     my ($self, $request) = @_;
 
-    my $matched_response;
+    my $matched_response = $self->run_handlers("request_send", $request);
+
     foreach my $entry (@{$self->{__response_map}}, @response_map)
     {
+        last if $matched_response;
         next if not defined $entry;
         my ($request_desc, $response) = @$entry;
 
@@ -126,6 +129,13 @@ sub send_request
     }
 
     $last_http_response_received = $self->{__last_http_response_received} = $response;
+
+    # bookkeeping that the real LWP::UserAgent does
+    $response->request($request);  # record request for reference
+    $response->header("Client-Date" => HTTP::Date::time2str(time));
+    $self->run_handlers("response_done", $response);
+    $self->progress("end", $response);
+
     return $response;
 }
 
