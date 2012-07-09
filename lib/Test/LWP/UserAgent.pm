@@ -126,7 +126,7 @@ sub send_request
 
         warn "response from coderef is not a HTTP::Response, it's a ",
             blessed($last_http_response_received)
-                unless blessed($last_http_response_received) and $last_http_response_received->isa('HTTP::Response');
+                unless eval { $last_http_response_received->isa('HTTP::Response') };
     }
 
     return $last_http_response_received;
