@@ -115,20 +115,18 @@ sub send_request
 
     $last_http_request_sent = $self->{__last_http_request_sent} = $request;
 
-    $last_http_response_received = $self->{__last_http_response_received} =
-        defined $matched_response ? $matched_response : HTTP::Response->new(404);
+    my $response = defined $matched_response ? $matched_response : HTTP::Response->new(404);
 
-    if (eval { \&$last_http_response_received })
+    if (eval { \&$response })
     {
-        $last_http_response_received = $self->{__last_http_response_received} =
-                $last_http_response_received->($request);
+        $response = $response->($request);
 
-        warn "response from coderef is not a HTTP::Response, it's a ",
-            blessed($last_http_response_received)
-                unless eval { $last_http_response_received->isa('HTTP::Response') };
+        warn "response from coderef is not a HTTP::Response, it's a ", blessed($response)
+            unless eval { $response->isa('HTTP::Response') };
     }
 
-    return $last_http_response_received;
+    $last_http_response_received = $self->{__last_http_response_received} = $response;
+    return $response;
 }
 
 sub __is_regexp($)
