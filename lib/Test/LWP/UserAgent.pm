@@ -144,7 +144,7 @@ __END__
 
 =head1 NAME
 
-Test::LWP::Dispatch - a LWP::UserAgent suitable for simulating and testing network calls
+Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing network calls
 
 =head1 SYNOPSIS
 
