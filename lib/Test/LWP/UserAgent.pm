@@ -32,8 +32,8 @@ sub map_response
     my ($self, $request_description, $response) = @_;
 
     warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
-        if not (ref $response eq 'CODE' or
-            blessed($response) and $response->isa('HTTP::Response'));
+        unless ref $response eq 'CODE' or
+            blessed($response) and $response->isa('HTTP::Response');
 
     if (blessed($self))
     {
@@ -126,7 +126,7 @@ sub send_request
 
         warn "response from coderef is not a HTTP::Response, it's a ",
             blessed($last_http_response_received)
-                if not (blessed($last_http_response_received) and $last_http_response_received->isa('HTTP::Response'));
+                unless blessed($last_http_response_received) and $last_http_response_received->isa('HTTP::Response');
     }
 
     return $last_http_response_received;
