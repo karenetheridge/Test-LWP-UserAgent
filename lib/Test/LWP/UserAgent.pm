@@ -32,7 +32,7 @@ sub map_response
     my ($self, $request_description, $response) = @_;
 
     warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
-        unless ref $response eq 'CODE' or
+        unless eval { \&$response } or
             blessed($response) and $response->isa('HTTP::Response');
 
     if (blessed($self))
@@ -90,22 +90,22 @@ sub send_request
 
         if (blessed $request_desc and $request_desc->isa('HTTP::Request'))
         {
-            $matched_response = $response and last
+            $matched_response = $response, last
                 if freeze($request) eq freeze($request_desc);
         }
         elsif (not reftype $request_desc)
         {
-            $matched_response = $response and last
+            $matched_response = $response, last
                 if $request->uri eq $request_desc;
         }
-        elsif (reftype $request_desc eq 'CODE')
+        elsif (eval { \&$request_desc })
         {
-            $matched_response = $response and last
+            $matched_response = $response, last
                 if $request_desc->($request);
         }
         elsif (__is_regexp $request_desc)
         {
-            $matched_response = $response and last
+            $matched_response = $response, last
                 if $request->uri =~ $request_desc;
         }
         else
@@ -117,9 +117,9 @@ sub send_request
     $last_http_request_sent = $self->{__last_http_request_sent} = $request;
 
     $last_http_response_received = $self->{__last_http_response_received} =
-        ($matched_response || HTTP::Response->new(404));
+        defined $matched_response ? $matched_response : HTTP::Response->new(404);
 
-    if (ref $last_http_response_received eq 'CODE')
+    if (eval { \&$last_http_response_received })
     {
         $last_http_response_received = $self->{__last_http_response_received} =
                 $last_http_response_received->($request);
