@@ -1,7 +1,7 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 44;
+use Test::More tests => 50;
 use Test::NoWarnings 1.04 ':early';
 use Test::Deep 0.110;
 use Storable 'freeze';
@@ -74,10 +74,17 @@ cmp_deeply(
     $class->map_response('http://foo:3001/success?a=1', HTTP::Response->new(201));
     $class->map_response(qr{foo.+success}, HTTP::Response->new(200));
     $class->map_response(qr{foo.+fail}, HTTP::Response->new(500));
-    $class->map_response(sub { shift->method eq 'HEAD' }, HTTP::Response->new(304));
+    $class->map_response(sub {
+            ::isa_ok($_[0], 'HTTP::Request');
+            $_[0]->method eq 'HEAD'
+        }, HTTP::Response->new(304));
     $class->map_response(HTTP::Request->new('DELETE', 'http://foo:3003/blah'), HTTP::Response->new(202));
     $class->map_response(qr{conditional},
-        sub { HTTP::Response->new(shift->uri =~ /success/ ? 200 : 550) });
+        sub {
+            ::isa_ok($_[0], 'HTTP::Request');
+            HTTP::Response->new(shift->uri =~ /success/ ? 200 : 550)
+        }
+    );
 
     $MyApp::useragent = $class->new;
 
