@@ -62,6 +62,17 @@ sub unmap_all
     }
 }
 
+sub register_domain
+{
+    # XXX check if class method
+    my ($self, $domain, $app) = @_;
+
+    $self->{__domain}{$domain} = $app;
+}
+
+sub unregister_domain {}
+sub unregister_all {}
+
 sub last_http_request_sent
 {
     my $self = shift;
@@ -86,6 +97,10 @@ sub send_request
 
     my $matched_response = $self->run_handlers("request_send", $request);
 
+    # first, check domain map.
+    # then check response map (do the lookup in a separate sub?)
+
+    my $matched_response;
     foreach my $entry (@{$self->{__response_map}}, @response_map)
     {
         last if $matched_response;
