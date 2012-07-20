@@ -33,8 +33,7 @@ sub map_response
     my ($self, $request_description, $response) = @_;
 
     warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
-        unless eval { \&$response } or
-            blessed($response) and $response->isa('HTTP::Response');
+        unless eval { \&$response } or eval { $response->isa('HTTP::Response') };
 
     if (blessed($self))
     {
@@ -89,7 +88,7 @@ sub send_request
         next if not defined $entry;
         my ($request_desc, $response) = @$entry;
 
-        if (blessed $request_desc and $request_desc->isa('HTTP::Request'))
+        if (eval { $request_desc->isa('HTTP::Request') })
         {
             $matched_response = $response, last
                 if freeze($request) eq freeze($request_desc);
