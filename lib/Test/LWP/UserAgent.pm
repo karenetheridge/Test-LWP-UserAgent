@@ -82,9 +82,11 @@ sub send_request
 {
     my ($self, $request) = @_;
 
-    my $matched_response;
+    my $matched_response = $self->run_handlers("request_send", $request);
+
     foreach my $entry (@{$self->{__response_map}}, @response_map)
     {
+        last if $matched_response;
         next if not defined $entry;
         my ($request_desc, $response) = @$entry;
 
