@@ -237,6 +237,10 @@ __END__
 
 Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing network calls
 
+=head1 VERSION
+
+version 0.006-TRIAL
+
 =head1 SYNOPSIS
 
 In your real code:
