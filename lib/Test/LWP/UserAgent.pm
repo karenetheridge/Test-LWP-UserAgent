@@ -86,14 +86,6 @@ sub register_domain
         $domain{$domain} = $app;
     }
 }
-# XXX instance registrations always take priority over globals; unregistration
-# from an instance will let a different mapping from a global take over,
-# unless the only mapping lived on the global to begin with and you specified
-# 'instance only', in which case it will be blocked from that instance but
-# available on other instances.
-
-# XXX you can unregister a global registration from an instance, to block it from
-# just that instance.
 sub unregister_domain
 {
     my ($self, $domain, $instance_only) = @_;
@@ -121,11 +113,6 @@ sub unregister_domain
         delete $domain{$domain};
     }
 }
-
-# XXX removes all mappings, either from just the instance or instance adn
-# global.
-# Does NOT have special logic for when to block certain entries like for
-# removing one registration at a time.
 
 sub unregister_all
 {
@@ -287,6 +274,16 @@ Then, in your tests:
         },
     );
 
+OR, you can use a L<PSGI> app to handle the requests (I<new, in v0.006-TRIAL>):
+
+    use HTTP::Message::PSGI;
+    Test::LWP::UserAgent->register_domain('example.com' => sub {
+        my $env = shift;
+        # logic here...
+        [ 200, [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
+    );
+
+And then:
 
     # <something which calls the code being tested...>
 
@@ -370,12 +367,59 @@ or
 =item unmap_all(instance_only?)
 
 When called as a class method, removes all mappings set up globally (across all
-objects). Some mappings set up on an individual object may still remain.
+objects). Mappings set up on an individual object will still remain.
 
 When called as an object method, removes I<all> mappings both globally and on
 this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
+
+=item register_domain($domain, $app)
+
+I<New, in v0.006-TRIAL>
+
+Register a particular L<PSGI> app (code reference) to be used when requests
+for a domain are received (matches are made exactly against
+C<$request->uri->host>).  The request is passed to the C<$app> for processing,
+and the L<PSGI> response is converted back to an L<HTTP::Response> (you must
+already have loadedL<HTTP::Message::PSGI> or equivalent, as this is not done
+for you).
+
+Note that domain registrations take priority over response mappings. (I<This
+ordering may change.>)  Also, instance registrations take priority over global
+(class method) registrations.
+
+=item unregister_domain($domain, instance_only?)
+
+I<New, in v0.006-TRIAL>
+
+When called as a class method, removes a domain->PSGI app entry that had been
+registered globally.  Some mappings set up on an individual object may still
+remain.
+
+When called as an object method, removes a domain registration that was made
+both globally and locally, unless a true value was passed as the second
+argument, in which case only the registration local to the object will be
+removed. This allows a different mapping made globally to take over.  However,
+if the only registration was global to begin with, I<and> you passed a true
+value as the second argument, use of that domain registration will be blocked
+I<just from that instance>, but will continue to be available from other
+instances.
+
+=item unregister_all(instance_only?)
+
+I<New, in v0.006-TRIAL>
+
+When called as a class method, removes all domain registrations set up
+globally (across all objects). Registrations set up on an individual object
+will still remain.
+
+When called as an object method, removes I<all> registrations both globally
+and on this instance, unless a true value is passed as an argument, in which
+only registrations local to the object will be removed. (Any true value will
+do, so you can pass a meaningful string.) (There is I<not> special logic for
+blocking registrations from certain instances as available in
+C<unregister_domain>.)
 
 =item last_http_request_sent
 
@@ -395,8 +439,9 @@ how your code reacted to receiving this response.
 This is the only method from L<LWP::UserAgent> that has been overridden, which
 processes the L<HTTP::Request>, sends to the network, then creates the
 L<HTTP::Response> object from the reply received. Here, we loop through your
-local and global mappings (in this order) and returns the first match found;
-otherwise, a simple 404 response is returned.
+local and global domain registrations, and local and global mappings (in this
+order) and returns the first match found; otherwise, a simple 404 response is
+returned.
 
 =back
 
@@ -419,11 +464,9 @@ throughout. It provides a method (C<last_http_request_sent>) to access the last
 L<HTTP::Request>, for testing things like the URI and headers that your code
 sent to L<LWP::UserAgent>.
 
-=head1 TODO
+=head1 TODO (possibly)
 
 =over 4
-
-=item Integration with L<PSGI> and L<HTTP::Message::PSGI>
 
 =item Option to locally or globally override useragent implementations via
 symbol table swap
@@ -435,7 +478,7 @@ symbol table swap
 L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
 
 mst - Matt S. Trout <mst@shadowcat.co.uk>, for the better name of this
-distribution.
+distribution, and for the PSGI registration concept.
 
 Also Yury Zavarin, whose L<Test::Mock::LWP::Dispatch> inspired me to write this
 module, and from where I borrowed some aspects of the API.
@@ -447,6 +490,8 @@ L<Test::Mock::LWP::Dispatch>
 L<Test::Mock::LWP::UserAgent>
 
 L<LWP::UserAgent>
+
+L<PSGI>, L<HTTP::Message::PSGI>
 
 =head1 COPYRIGHT
 
