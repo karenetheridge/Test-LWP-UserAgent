@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.006-TRIAL  2012-07-28 16:03:24 PDT-0700 (Karen Etheridge)
           - new domain->PSGI app functionality, and methods register_domain,
             unregister_domain, unregister_all
 
