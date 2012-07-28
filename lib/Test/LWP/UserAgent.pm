@@ -6,6 +6,8 @@ use warnings;
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);
 use Storable 'freeze';
+use HTTP::Request;
+use HTTP::Response;
 use HTTP::Date;
 
 my $last_http_request_sent;
