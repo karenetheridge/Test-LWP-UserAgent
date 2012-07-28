@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - new domain->PSGI app functionality, and methods register_domain,
+            unregister_domain, unregister_all
 
 0.005     2012-07-20 17:37:26 PDT-0700 (Karen Etheridge)
           - additional error checking and tests
