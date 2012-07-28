@@ -339,8 +339,8 @@ symbol table swap
 
 L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
 
-mst - Matt S. Trout <mst@shadowcat.co.uk>, for kicking me in the posterior
-about my previous bad testing practices.
+mst - Matt S. Trout <mst@shadowcat.co.uk>, for the better name of this
+distribution.
 
 Also Yury Zavarin, whose L<Test::Mock::LWP::Dispatch> inspired me to write this
 module, and from where I borrowed some aspects of the API.
