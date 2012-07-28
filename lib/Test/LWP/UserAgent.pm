@@ -177,11 +177,11 @@ Then, in your tests:
     use Test::More;
 
     Test::LWP::UserAgent->map_response(
-        qr{foo/success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
+        qr{example.com/success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
-        qr{foo/fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
+        qr{example.com/fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
-        qr{foo/conditional},
+        qr{example.com/conditional},
         sub {
             my $request = shift;
             my $success = $request->uri =~ /success/;
