@@ -166,7 +166,6 @@ sub test_send_request
 
     # response is what we stored in the useragent
     isa_ok($response, 'HTTP::Response');
-
     is(
         freeze($MyApp::useragent->last_http_response_received),
         freeze($response),
