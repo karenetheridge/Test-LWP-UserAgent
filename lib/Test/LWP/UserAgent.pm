@@ -8,11 +8,13 @@ use Scalar::Util qw(blessed reftype);
 use Storable 'freeze';
 use HTTP::Request;
 use HTTP::Response;
+use URI;
 use HTTP::Date;
 
 my $last_http_request_sent;
 my $last_http_response_received;
 my @response_map;
+my %domain;
 
 sub new
 {
@@ -22,6 +24,7 @@ sub new
     $self->{__last_http_request_sent} = undef;
     $self->{__last_http_response_received} = undef;
     $self->{__response_map} = [];
+    $self->{__domain} = {};
 
     # strips default User-Agent header added by LWP::UserAgent, to make it
     # easier to define literal HTTP::Requests to match against
@@ -54,24 +57,90 @@ sub unmap_all
     if (blessed $self)
     {
         $self->{__response_map} = [];
-        @response_map = () if not $instance_only;
+        @response_map = () unless $instance_only;
     }
     else
     {
+        warn 'instance-only unmap requests make no sense when called globally'
+            if $instance_only;
         @response_map = ();
     }
 }
 
 sub register_domain
 {
-    # XXX check if class method
     my ($self, $domain, $app) = @_;
 
-    $self->{__domain}{$domain} = $app;
+    warn "register_domain: app is not a coderef, it's a " . ref($app)
+        unless eval { \&$app };
+
+    warn "register_domain: did you forget to load HTTP::Message::PSGI?"
+        unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
+
+    if (blessed $self)
+    {
+        $self->{__domain}{$domain} = $app;
+    }
+    else
+    {
+        $domain{$domain} = $app;
+    }
+}
+# XXX instance registrations always take priority over globals; unregistration
+# from an instance will let a different mapping from a global take over,
+# unless the only mapping lived on the global to begin with and you specified
+# 'instance only', in which case it will be blocked from that instance but
+# available on other instances.
+
+# XXX you can unregister a global registration from an instance, to block it from
+# just that instance.
+sub unregister_domain
+{
+    my ($self, $domain, $instance_only) = @_;
+
+    if (blessed $self)
+    {
+        if ($instance_only and not $self->{__domain}{$domain} and $domain{$domain})
+        {
+            # block global entries from being used, if the only entry to begin
+            # with was global and we were asked for an instance-only removal
+            undef $self->{__domain}{$domain};
+        }
+        else
+        {
+            # allow any global entries to become visible
+            delete $self->{__domain}{$domain};
+        }
+
+        delete $domain{$domain} unless $instance_only;
+    }
+    else
+    {
+        warn 'instance-only unregistrations make no sense when called globally'
+            if $instance_only;
+        delete $domain{$domain};
+    }
 }
 
-sub unregister_domain {}
-sub unregister_all {}
+# XXX removes all mappings, either from just the instance or instance adn
+# global.
+# Does NOT have special logic for when to block certain entries like for
+# removing one registration at a time.
+
+sub unregister_all
+{
+    my ($self, $instance_only) = @_;
+
+    if (blessed $self)
+    {
+        $self->{__domain} = {};
+        %domain = () unless $instance_only;
+    }
+    else
+    {
+        %domain = ();
+    }
+}
 
 sub last_http_request_sent
 {
@@ -97,10 +166,21 @@ sub send_request
 
     my $matched_response = $self->run_handlers("request_send", $request);
 
-    # first, check domain map.
-    # then check response map (do the lookup in a separate sub?)
+    if (not $matched_response)
+    {
+        my $uri = $request->uri;
+        $uri = URI->new($uri) if not eval { $uri->isa('URI') };
 
-    my $matched_response;
+        # it is intentional that explicit undefs on the instance will prevent
+        # global entries from being seen.
+        my $app = exists $self->{__domain}{$uri->host}
+            ? $self->{__domain}{$uri->host}
+            : $domain{$uri->host};
+
+        $matched_response = HTTP::Response->from_psgi($app->($request->to_psgi))
+            if $app;
+    }
+
     foreach my $entry (@{$self->{__response_map}}, @response_map)
     {
         last if $matched_response;
