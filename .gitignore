@@ -17,7 +17,7 @@ test-mydeps-*
 nytprof*
 /inc/
 !.gitignore
-*.sw*
+.*.sw?
 /Test-Mock-LWP-UserAgent-*
 /Test-LWP-UserAgent-*
 todo.txt
