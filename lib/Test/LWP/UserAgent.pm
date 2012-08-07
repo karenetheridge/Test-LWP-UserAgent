@@ -475,6 +475,9 @@ sent to L<LWP::UserAgent>.
 =item Option to locally or globally override useragent implementations via
 symbol table swap
 
+=item Ability to route certain requests through the real network, to gain the
+benefits of C<last_http_request_sent> and C<last_http_response_received>
+
 =back
 
 =head1 ACKNOWLEDGEMENTS

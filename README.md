@@ -229,6 +229,8 @@ sent to [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent).
 
 - Option to locally or globally override useragent implementations via
 symbol table swap
+- Ability to route certain requests through the real network, to gain the
+benefits of `last_http_request_sent` and `last_http_response_received`
 
 # ACKNOWLEDGEMENTS
 
