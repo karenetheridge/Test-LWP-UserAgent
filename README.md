@@ -73,7 +73,7 @@ If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
 
-- map\_response($request\_description, $http\_response)
+- `map_response($request_description, $http_response)`
 
 With this method, you set up what [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) should be returned for each
 request received.
@@ -109,7 +109,7 @@ The request can be described in multiple ways:
             HTTP::Response->new(200),
         );
 
-    - HTTP::Request object
+    - [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object
 
     The [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object is matched identically (including all query
     parameters, headers etc) against the provided object.
@@ -127,7 +127,7 @@ or
         HTTP::Response->new(...);
     }
 
-- unmap\_all(instance\_only?)
+- `unmap_all(instance_only?)`
 
 When called as a class method, removes all mappings set up globally (across all
 objects). Mappings set up on an individual object will still remain.
@@ -137,7 +137,7 @@ this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
 
-- register\_domain($domain, $app)
+- `register_domain($domain, $app)`
 
 _New, in v0.006-TRIAL_
 
@@ -152,7 +152,7 @@ Note that domain registrations take priority over response mappings. (_This
 ordering may change._)  Also, instance registrations take priority over global
 (class method) registrations.
 
-- unregister\_domain($domain, instance\_only?)
+- `unregister_domain($domain, instance_only?)`
 
 _New, in v0.006-TRIAL_
 
@@ -169,7 +169,7 @@ value as the second argument, use of that domain registration will be blocked
 _just from that instance_, but will continue to be available from other
 instances.
 
-- unregister\_all(instance\_only?)
+- `unregister_all(instance_only?)`
 
 _New, in v0.006-TRIAL_
 
@@ -184,20 +184,20 @@ do, so you can pass a meaningful string.) (There is _not_ special logic for
 blocking registrations from certain instances as available in
 `unregister_domain`.)
 
-- last\_http\_request\_sent
+- `last_http_request_sent`
 
 The last [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object that this object (if called on an object) or
 module (if called as a class method) processed, whether or not it matched a
 mapping you set up earlier.
 
-- last\_http\_response\_received
+- `last_http_response_received`
 
 The last [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) object that this module returned, as a result of a
 mapping you set up earlier with `map_response`. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
-- send\_request($request)
+- `send_request($request)`
 
 This is the only method from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) that has been overridden, which
 processes the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), sends to the network, then creates the
