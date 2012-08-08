@@ -151,6 +151,7 @@ sub send_request
 {
     my ($self, $request) = @_;
 
+    $self->progress("begin", $request);
     my $matched_response = $self->run_handlers("request_send", $request);
 
     if (not $matched_response)
