@@ -3,6 +3,8 @@ Revision history for {{$dist->name}}
 {{$NEXT}}
           - better handling when the response implementation dies, either
             with an error message or an HTTP::Response object
+          - network_fallback and map_network_response features added, for
+            sending any or all requests through to the real LWP::UserAgent
 
 0.007     2012-08-14 13:56:50 PDT-0700 (Karen Etheridge)
           - cleanup of domain->PSGI app functionality for stable release:

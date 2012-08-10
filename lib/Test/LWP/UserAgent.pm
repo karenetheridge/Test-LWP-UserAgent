@@ -17,15 +17,17 @@ use Try::Tiny;
 my $last_http_request_sent;
 my $last_http_response_received;
 my @response_map;
+my $network_fallback;
 
 sub new
 {
-    my $class = shift;
+    my ($class, %options) = @_;
 
-    my $self = $class->SUPER::new(@_);
+    my $self = $class->SUPER::new(%options);
     $self->{__last_http_request_sent} = undef;
     $self->{__last_http_response_received} = undef;
     $self->{__response_map} = [];
+    $self->{__network_fallback} = $options{network_fallback};
 
     # strips default User-Agent header added by LWP::UserAgent, to make it
     # easier to define literal HTTP::Requests to match against
@@ -67,6 +69,22 @@ sub map_response
     else
     {
         push @response_map, [ $request_description, $response ];
+    }
+}
+
+sub map_network_response
+{
+    my ($self, $request_description) = @_;
+
+    if (blessed $self)
+    {
+        push @{$self->{__response_map}},
+            [ $request_description, sub { $self->SUPER::send_request($_[0]) } ];
+    }
+    else
+    {
+        push @response_map,
+            [ $request_description, sub { LWP::UserAgent->new->send_request($_[0]) } ];
     }
 }
 
@@ -138,6 +156,21 @@ sub last_http_response_received
         : $last_http_response_received;
 }
 
+sub network_fallback
+{
+    my ($self, $value) = @_;
+
+    if (@_ == 1)
+    {
+        return blessed $self
+            ? $self->{__network_fallback}
+            : $network_fallback;
+    }
+
+    return $self->{__network_fallback} = $value if blessed $self;
+    $network_fallback = $value;
+}
+
 sub __is_regexp($);
 
 sub send_request
@@ -184,7 +217,17 @@ sub send_request
 
     $last_http_request_sent = $self->{__last_http_request_sent} = $request;
 
-    my $response = defined $matched_response ? $matched_response : HTTP::Response->new(404);
+    if (not defined $matched_response and
+        ($self->{__network_fallback} or $network_fallback))
+    {
+        my $response = $self->SUPER::send_request($request);
+        $last_http_response_received = $self->{__last_http_response_received} = $response;
+        return $response;
+    }
+
+    my $response = defined $matched_response
+        ? $matched_response
+        : HTTP::Response->new(404);
 
     if (eval { \&$response })
     {
@@ -300,6 +343,34 @@ And then:
 
     # <now test that your code responded to the 200 response properly...>
 
+This feature is useful for testing your PSGI apps (you may or may not find
+using L<Plack::Test> easier), or for simulating a server so as to test your
+client code.
+
+OR, you can route some or all requests through the network as normal, but
+still gain the hooks provided by this class to test what was sent and
+received:
+
+    my $useragent = Test::LWP::UserAgent->new(network_fallback => 1);
+
+or:
+
+    $useragent->map_network_response(qr/real.network.host/);
+
+    # ... generate a request...
+
+    # and then in your tests:
+    is(
+        $useragent->last_http_request_sent->uri,
+        'uri my code should have constructed',
+    );
+    is(
+        $useragent->last_http_response_received->code,
+        200,
+        'I should have gotten an OK response',
+    );
+
+
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
 default to C<< LWP::UserAgent->new(%options) >>.
@@ -318,14 +389,26 @@ want to unset this if you really want to test extraordinary errors within your
 networking code.  Normally, you should leave it alone, as L<LWP::UserAgent> and
 this module are capable of handling normal errors.
 
+Plus, this option is added:
+
+=over
+
+=item * C<< network_fallback => <boolean> >>
+
+If true, requests passing through this object that do not match a
+previously-configured mapping or registration will be directed to the network.
+(To only divert I<matched> requests rather than unmatched requests, use
+C<map_network_response>, see below.)
+
+This option is also available as a read/write accessor via
+C<< $useragent->network_fallback(<value?>) >>.
+
 =back
 
 All other methods may be called on a specific object instance, or as a class method.
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
-
-=over
 
 =item * C<map_response($request_description, $http_response)>
 
@@ -389,6 +472,17 @@ Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
 then examined. After no matches have been found, a 404 response is returned.
 
+=item * C<map_network_response($request_description)>
+
+Same as C<map_response> above, only requests that match this description will
+not use a response that you specify, but instead uses a real L<LWP::UserAgent>
+to dispatch your request to the network.
+
+If called on an instance, all options passed to the constructor (e.g. timeout)
+are used for making the real network call. If called as a class method, a
+pristine L<LWP::UserAgent> object with no customized options will be used
+instead.
+
 =item * C<unmap_all(instance_only?)>
 
 When called as a class method, removes all mappings set up globally (across all
@@ -446,6 +540,13 @@ mapping you set up earlier with C<map_response>. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
+=item * C<network_fallback>
+
+Getter/setter method for the network_fallback preference that will be used on
+this object (if called as an instance method), or globally, if called as a
+class method.  Note that the actual behaviour used on an object is the ORed
+value of the instance setting and the global setting.
+
 =item * C<send_request($request)>
 
 This is the only method from L<LWP::UserAgent> that has been overridden, which
@@ -453,11 +554,24 @@ processes the L<HTTP::Request>, sends to the network, then creates the
 L<HTTP::Response> object from the reply received. Here, we loop through your
 local and global domain registrations, and local and global mappings (in this
 order) and returns the first match found; otherwise, a simple 404 response is
-returned.
+returned (unless C<network_fallback> was specified as a constructor option,
+in which case unmatched requests will be delivered to the network.)
 
 =back
 
 All other methods from L<LWP::UserAgent> are available unchanged.
+
+=head1 Use with SOAP requests
+
+To use this module when communicating with a SOAP server (either a real one,
+with live network requests, see above ... link here ..., or with one simulated
+with mapped responses), simply do this:
+
+    use SOAP::Lite;
+    use SOAP::Transport::HTTP;
+    $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
+
+See also L<SOAP::Transport/CHANGING THE DEFAULT USERAGENT CLASS>.
 
 =head1 MOTIVATION
 
@@ -482,9 +596,6 @@ sent to L<LWP::UserAgent>.
 
 =item * Option to locally or globally override useragent implementations via
 symbol table swap
-
-=item * Ability to route certain requests through the real network, to gain the
-benefits of C<last_http_request_sent> and C<last_http_response_received>
 
 =back
 

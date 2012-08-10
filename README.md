@@ -62,6 +62,33 @@ And then:
 
     # <now test that your code responded to the 200 response properly...>
 
+This feature is useful for testing your PSGI apps (you may or may not find
+using [Plack::Test](http://search.cpan.org/perldoc?Plack::Test) easier), or for simulating a server so as to test your
+client code.
+
+OR, you can route some or all requests through the network as normal, but
+still gain the hooks provided by this class to test what was sent and
+received:
+
+    my $useragent = Test::LWP::UserAgent->new(network_fallback => 1);
+
+or:
+
+    $useragent->map_network_response(qr/real.network.host/);
+
+    # ... generate a request...
+
+    # and then in your tests:
+    is(
+        $useragent->last_http_request_sent->uri,
+        'uri my code should have constructed',
+    );
+    is(
+        $useragent->last_http_response_received->code,
+        200,
+        'I should have gotten an OK response',
+    );
+
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
 default to `LWP::UserAgent->new(%options)`.
@@ -77,6 +104,18 @@ and an appropriate error response (usually HTTP 500) to be returned. You may
 want to unset this if you really want to test extraordinary errors within your
 networking code.  Normally, you should leave it alone, as [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) and
 this module are capable of handling normal errors.
+
+Plus, this option is added:
+
+    - `network_fallback => <boolean>`
+
+    If true, requests passing through this object that do not match a
+    previously-configured mapping or registration will be directed to the network.
+    (To only divert _matched_ requests rather than unmatched requests, use
+    `map_network_response`, see below.)
+
+    This option is also available as a read/write accessor via
+    `$useragent->network_fallback(<value?>)`.
 
 All other methods may be called on a specific object instance, or as a class method.
 If called as on a blessed object, the action performed or data returned is
@@ -141,6 +180,17 @@ Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
 then examined. After no matches have been found, a 404 response is returned.
 
+- `map_network_response($request_description)`
+
+Same as `map_response` above, only requests that match this description will
+not use a response that you specify, but instead uses a real [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent)
+to dispatch your request to the network.
+
+If called on an instance, all options passed to the constructor (e.g. timeout)
+are used for making the real network call. If called as a class method, a
+pristine [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) object with no customized options will be used
+instead.
+
 - `unmap_all(instance_only?)`
 
 When called as a class method, removes all mappings set up globally (across all
@@ -198,6 +248,13 @@ mapping you set up earlier with `map_response`. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
+- `network_fallback`
+
+Getter/setter method for the network\_fallback preference that will be used on
+this object (if called as an instance method), or globally, if called as a
+class method.  Note that the actual behaviour used on an object is the ORed
+value of the instance setting and the global setting.
+
 - `send_request($request)`
 
 This is the only method from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) that has been overridden, which
@@ -205,9 +262,22 @@ processes the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), sen
 [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) object from the reply received. Here, we loop through your
 local and global domain registrations, and local and global mappings (in this
 order) and returns the first match found; otherwise, a simple 404 response is
-returned.
+returned (unless `network_fallback` was specified as a constructor option,
+in which case unmatched requests will be delivered to the network.)
 
 All other methods from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) are available unchanged.
+
+# Use with SOAP requests
+
+To use this module when communicating with a SOAP server (either a real one,
+with live network requests, see above ... link here ..., or with one simulated
+with mapped responses), simply do this:
+
+    use SOAP::Lite;
+    use SOAP::Transport::HTTP;
+    $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
+
+See also ["CHANGING THE DEFAULT USERAGENT CLASS" in SOAP::Transport](http://search.cpan.org/perldoc?SOAP::Transport#CHANGING THE DEFAULT USERAGENT CLASS).
 
 # MOTIVATION
 
@@ -230,8 +300,6 @@ sent to [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent).
 
 - Option to locally or globally override useragent implementations via
 symbol table swap
-- Ability to route certain requests through the real network, to gain the
-benefits of `last_http_request_sent` and `last_http_response_received`
 
 # ACKNOWLEDGEMENTS
 
