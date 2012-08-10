@@ -300,7 +300,7 @@ And then:
 
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
-default to C<LWP::UserAgent->new(%options)>.
+default to C<< LWP::UserAgent->new(%options) >>.
 
 =head1 METHODS
 
@@ -385,9 +385,9 @@ I<New, in v0.006-TRIAL>
 
 Register a particular L<PSGI> app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
-C<$request->uri->host>).  The request is passed to the C<$app> for processing,
+C<< $request->uri->host >>).  The request is passed to the C<$app> for processing,
 and the L<PSGI> response is converted back to an L<HTTP::Response> (you must
-already have loadedL<HTTP::Message::PSGI> or equivalent, as this is not done
+already have loaded L<HTTP::Message::PSGI> or equivalent, as this is not done
 for you).
 
 Note that domain registrations take priority over response mappings. (I<This

@@ -64,7 +64,7 @@ And then:
 
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
-default to `LWP::UserAgent-`new(%options)>.
+default to `LWP::UserAgent->new(%options)`.
 
 # METHODS
 
@@ -143,9 +143,9 @@ _New, in v0.006-TRIAL_
 
 Register a particular [PSGI](http://search.cpan.org/perldoc?PSGI) app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
-`$request-`uri->host>).  The request is passed to the `$app` for processing,
+`$request->uri->host`).  The request is passed to the `$app` for processing,
 and the [PSGI](http://search.cpan.org/perldoc?PSGI) response is converted back to an [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) (you must
-already have loaded[HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI) or equivalent, as this is not done
+already have loaded [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI) or equivalent, as this is not done
 for you).
 
 Note that domain registrations take priority over response mappings. (_This
