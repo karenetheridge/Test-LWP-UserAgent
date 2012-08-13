@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - better handling when the response implementation dies, either
+            with an error message or an HTTP::Response object
 
 0.006-TRIAL  2012-07-28 16:03:24 PDT-0700 (Karen Etheridge)
           - new domain->PSGI app functionality, and methods register_domain,
