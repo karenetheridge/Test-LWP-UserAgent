@@ -68,7 +68,17 @@ default to `LWP::UserAgent->new(%options)`.
 
 # METHODS
 
-All methods may be called on a specific object instance, or as a class method.
+- `new`
+
+Accepts all options as in [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent), including `use_eval`, an
+undocumented boolean which is enabled by default. When set, sending the HTTP
+request is wrapped in an `eval {}`, allowing all exceptions to be caught
+and an appropriate error response (usually HTTP 500) to be returned. You may
+want to unset this if you really want to test extraordinary errors within your
+networking code.  Normally, you should leave it alone, as [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) and
+this module are capable of handling normal errors.
+
+All other methods may be called on a specific object instance, or as a class method.
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.

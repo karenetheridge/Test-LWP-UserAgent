@@ -11,6 +11,8 @@ use HTTP::Request;
 use HTTP::Response;
 use URI;
 use HTTP::Date;
+use HTTP::Status qw(:constants status_message);
+use Try::Tiny;
 
 my $last_http_request_sent;
 my $last_http_response_received;
@@ -54,7 +56,8 @@ sub map_response
         return;
     }
 
-    warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
+    warn "map_response: response is not an HTTP::Response, it's a ",
+            (blessed($response) || 'non-object')
         unless eval { \&$response } or eval { $response->isa('HTTP::Response') };
 
     if (blessed $self)
@@ -90,7 +93,7 @@ sub register_psgi
 
     return $self->map_response($domain, undef) if not defined $app;
 
-    warn "register_psgi: app is not a coderef, it's a " . ref($app)
+    warn "register_psgi: app is not a coderef, it's a ", ref($app)
         unless eval { \&$app };
 
     warn "register_psgi: did you forget to load HTTP::Message::PSGI?"
@@ -185,19 +188,48 @@ sub send_request
 
     if (eval { \&$response })
     {
-        $response = $response->($request);
-
-        warn "response from coderef is not a HTTP::Response, it's a ", blessed($response)
-            unless eval { $response->isa('HTTP::Response') };
+        # emulates handling in LWP::UserAgent::send_request
+        if ($self->use_eval)
+        {
+            $response = try { $response->($request) }
+            catch {
+                my $exception = $_;
+                if (eval { $exception->isa('HTTP::Response') })
+                {
+                    $response = $exception;
+                }
+                else
+                {
+                    my $full = $exception;
+                    (my $status = $exception) =~ s/\n.*//s;
+                    $status =~ s/ at .* line \d+.*//s;  # remove file/line number
+                    my $code = ($status =~ s/^(\d\d\d)\s+//) ? $1 : HTTP_INTERNAL_SERVER_ERROR;
+                    $response = LWP::UserAgent::_new_response($request, $code, $status, $full);
+                }
+            }
+        }
+        else
+        {
+            $response = $response->($request);
+        }
     }
 
-    $last_http_response_received = $self->{__last_http_response_received} = $response;
+    if (not eval { $response->isa('HTTP::Response') })
+    {
+        warn "response from coderef is not a HTTP::Response, it's a ",
+            (blessed($response) || 'non-object');
+        $response = LWP::UserAgent::_new_response($request, HTTP_INTERNAL_SERVER_ERROR, status_message(HTTP_INTERNAL_SERVER_ERROR));
+    }
+    else
+    {
+        $response->request($request);  # record request for reference
+        $response->header("Client-Date" => HTTP::Date::time2str(time));
+    }
 
-    # bookkeeping that the real LWP::UserAgent does
-    $response->request($request);  # record request for reference
-    $response->header("Client-Date" => HTTP::Date::time2str(time));
     $self->run_handlers("response_done", $response);
     $self->progress("end", $response);
+
+    $last_http_response_received = $self->{__last_http_response_received} = $response;
 
     return $response;
 }
@@ -274,7 +306,21 @@ default to C<< LWP::UserAgent->new(%options) >>.
 
 =head1 METHODS
 
-All methods may be called on a specific object instance, or as a class method.
+=over
+
+=item * C<new>
+
+Accepts all options as in L<LWP::UserAgent>, including C<use_eval>, an
+undocumented boolean which is enabled by default. When set, sending the HTTP
+request is wrapped in an C<< eval {} >>, allowing all exceptions to be caught
+and an appropriate error response (usually HTTP 500) to be returned. You may
+want to unset this if you really want to test extraordinary errors within your
+networking code.  Normally, you should leave it alone, as L<LWP::UserAgent> and
+this module are capable of handling normal errors.
+
+=back
+
+All other methods may be called on a specific object instance, or as a class method.
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
