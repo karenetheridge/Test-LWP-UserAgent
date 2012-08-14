@@ -14,7 +14,6 @@ use HTTP::Date;
 my $last_http_request_sent;
 my $last_http_response_received;
 my @response_map;
-my %domain;
 
 sub new
 {
@@ -24,7 +23,6 @@ sub new
     $self->{__last_http_request_sent} = undef;
     $self->{__last_http_response_received} = undef;
     $self->{__response_map} = [];
-    $self->{__domain} = {};
 
     # strips default User-Agent header added by LWP::UserAgent, to make it
     # easier to define literal HTTP::Requests to match against
@@ -36,6 +34,24 @@ sub new
 sub map_response
 {
     my ($self, $request_description, $response) = @_;
+
+    if (not defined $response and not reftype $request_description and blessed $self)
+    {
+        # mask a global domain mapping
+        my @indexes = grep {
+            not reftype $_->[0] and $_->[0] eq $request_description
+        } @{$self->{__response_map}};
+
+        if (@indexes)
+        {
+            undef @{$self->{__response_map}}[@indexes];
+        }
+        else
+        {
+            push @{$self->{__response_map}}, [ $request_description, undef ];
+        }
+        return;
+    }
 
     warn "map_response: response is not an HTTP::Response, it's a " . blessed($response)
         unless eval { \&$response } or eval { $response->isa('HTTP::Response') };
@@ -67,65 +83,38 @@ sub unmap_all
     }
 }
 
-sub register_domain
+sub register_psgi
 {
     my ($self, $domain, $app) = @_;
 
-    warn "register_domain: app is not a coderef, it's a " . ref($app)
+    return $self->map_response($domain, undef) if not defined $app;
+
+    warn "register_psgi: app is not a coderef, it's a " . ref($app)
         unless eval { \&$app };
 
-    warn "register_domain: did you forget to load HTTP::Message::PSGI?"
+    warn "register_psgi: did you forget to load HTTP::Message::PSGI?"
         unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
 
-    if (blessed $self)
-    {
-        $self->{__domain}{$domain} = $app;
-    }
-    else
-    {
-        $domain{$domain} = $app;
-    }
+    return $self->map_response(
+        $domain,
+        sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
+    );
 }
-sub unregister_domain
+
+sub unregister_psgi
 {
     my ($self, $domain, $instance_only) = @_;
 
     if (blessed $self)
     {
-        if ($instance_only and not $self->{__domain}{$domain} and $domain{$domain})
-        {
-            # block global entries from being used, if the only entry to begin
-            # with was global and we were asked for an instance-only removal
-            undef $self->{__domain}{$domain};
-        }
-        else
-        {
-            # allow any global entries to become visible
-            delete $self->{__domain}{$domain};
-        }
+        @{$self->{__response_map}} = grep { $_->[0] ne $domain } @{$self->{__response_map}};
 
-        delete $domain{$domain} unless $instance_only;
+        @response_map = grep { $_->[0] ne $domain } @response_map
+            unless $instance_only;
     }
     else
     {
-        warn 'instance-only unregistrations make no sense when called globally'
-            if $instance_only;
-        delete $domain{$domain};
-    }
-}
-
-sub unregister_all
-{
-    my ($self, $instance_only) = @_;
-
-    if (blessed $self)
-    {
-        $self->{__domain} = {};
-        %domain = () unless $instance_only;
-    }
-    else
-    {
-        %domain = ();
+        @response_map = grep { $_->[0] ne $domain } @response_map;
     }
 }
 
@@ -154,20 +143,7 @@ sub send_request
     $self->progress("begin", $request);
     my $matched_response = $self->run_handlers("request_send", $request);
 
-    if (not $matched_response)
-    {
-        my $uri = $request->uri;
-        $uri = URI->new($uri) if not eval { $uri->isa('URI') };
-
-        # it is intentional that explicit undefs on the instance will prevent
-        # global entries from being seen.
-        my $app = exists $self->{__domain}{$uri->host}
-            ? $self->{__domain}{$uri->host}
-            : $domain{$uri->host};
-
-        $matched_response = HTTP::Response->from_psgi($app->($request->to_psgi))
-            if $app;
-    }
+    my $uri = $request->uri;
 
     foreach my $entry (@{$self->{__response_map}}, @response_map)
     {
@@ -182,8 +158,9 @@ sub send_request
         }
         elsif (not reftype $request_desc)
         {
+            $uri = URI->new($uri) if not eval { $uri->isa('URI') };
             $matched_response = $response, last
-                if $request->uri eq $request_desc;
+                if $uri->host eq $request_desc;
         }
         elsif (eval { \&$request_desc })
         {
@@ -279,10 +256,10 @@ Then, in your tests:
         },
     );
 
-OR, you can use a L<PSGI> app to handle the requests (I<new, in v0.006-TRIAL>):
+OR, you can use a L<PSGI> app to handle the requests:
 
     use HTTP::Message::PSGI;
-    Test::LWP::UserAgent->register_domain('example.com' => sub {
+    Test::LWP::UserAgent->register_psgi('example.com' => sub {
         my $env = shift;
         # logic here...
         [ 200, [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
@@ -316,17 +293,17 @@ global.
 With this method, you set up what L<HTTP::Response> should be returned for each
 request received.
 
-The request can be described in multiple ways:
+The request match specification can be described in multiple ways:
 
 =over
 
 =item string
 
-The string is matched identically against the L<URI> in the request.
+The string is matched identically against the C<host> field of the L<URI> in the request.
 
 Example:
 
-    $test_ua->map_response('http://example.com/foo', HTTP::Response->new(500));
+    $test_ua->map_response('example.com', HTTP::Response->new(500));
 
 =item regexp
 
@@ -369,6 +346,10 @@ or
         HTTP::Response->new(...);
     }
 
+Instance mappings take priority over global (class method) mappings - if no
+matches are found from mappings added to the instance, the global mappings are
+then examined. After no matches have been found, a 404 response is returned.
+
 =item C<unmap_all(instance_only?)>
 
 When called as a class method, removes all mappings set up globally (across all
@@ -379,9 +360,7 @@ this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
 
-=item C<register_domain($domain, $app)>
-
-I<New, in v0.006-TRIAL>
+=item C<register_psgi($domain, $app)>
 
 Register a particular L<PSGI> app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
@@ -390,13 +369,16 @@ and the L<PSGI> response is converted back to an L<HTTP::Response> (you must
 already have loaded L<HTTP::Message::PSGI> or equivalent, as this is not done
 for you).
 
-Note that domain registrations take priority over response mappings. (I<This
-ordering may change.>)  Also, instance registrations take priority over global
-(class method) registrations.
+You can also use C<register_psgi> with a regular expression as the first
+argument, or any of the other forms used by C<map_response>, if you wish, as
+calling C<< $test_ua->register_psgi($domain, $app) >> is equivalent to:
 
-=item C<unregister_domain($domain, instance_only?)>
+    $test_ua->map_response(
+        $domain,
+        sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
+    );
 
-I<New, in v0.006-TRIAL>
+=item C<unregister_psgi($domain, instance_only?)>
 
 When called as a class method, removes a domain->PSGI app entry that had been
 registered globally.  Some mappings set up on an individual object may still
@@ -405,26 +387,12 @@ remain.
 When called as an object method, removes a domain registration that was made
 both globally and locally, unless a true value was passed as the second
 argument, in which case only the registration local to the object will be
-removed. This allows a different mapping made globally to take over.  However,
-if the only registration was global to begin with, I<and> you passed a true
-value as the second argument, use of that domain registration will be blocked
-I<just from that instance>, but will continue to be available from other
-instances.
+removed. This allows a different mapping made globally to take over.
 
-=item C<unregister_all(instance_only?)>
+If you want to mask a global registration on just one particular instance,
+then add C<undef> as a mapping on your instance:
 
-I<New, in v0.006-TRIAL>
-
-When called as a class method, removes all domain registrations set up
-globally (across all objects). Registrations set up on an individual object
-will still remain.
-
-When called as an object method, removes I<all> registrations both globally
-and on this instance, unless a true value is passed as an argument, in which
-only registrations local to the object will be removed. (Any true value will
-do, so you can pass a meaningful string.) (There is I<not> special logic for
-blocking registrations from certain instances as available in
-C<unregister_domain>.)
+    $useragent->map_response($domain, undef);
 
 =item C<last_http_request_sent>
 

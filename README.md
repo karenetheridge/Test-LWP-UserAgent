@@ -43,10 +43,10 @@ Then, in your tests:
         },
     );
 
-OR, you can use a [PSGI](http://search.cpan.org/perldoc?PSGI) app to handle the requests (_new, in v0.006-TRIAL_):
+OR, you can use a [PSGI](http://search.cpan.org/perldoc?PSGI) app to handle the requests:
 
     use HTTP::Message::PSGI;
-    Test::LWP::UserAgent->register_domain('example.com' => sub {
+    Test::LWP::UserAgent->register_psgi('example.com' => sub {
         my $env = shift;
         # logic here...
         [ 200, [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
@@ -78,15 +78,15 @@ global.
 With this method, you set up what [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) should be returned for each
 request received.
 
-The request can be described in multiple ways:
+The request match specification can be described in multiple ways:
 
     - string
 
-    The string is matched identically against the URI in the request.
+    The string is matched identically against the `host` field of the [URI](http://search.cpan.org/perldoc?URI) in the request.
 
     Example:
 
-        $test_ua->map('http://example.com/path', HTTP::Response->new(500));
+        $test_ua->map_response('example.com', HTTP::Response->new(500));
 
     - regexp
 
@@ -94,15 +94,15 @@ The request can be described in multiple ways:
 
     Example:
 
-        $test_ua->map(qr{path1}, HTTP::Response->new(200));
-        $test_ua->map(qr{path2}, HTTP::Response->new(500));
+        $test_ua->map_response(qr{foo/bar}, HTTP::Response->new(200));
+        $test_ua->map_response(qr{baz/quux}, HTTP::Response->new(500));
 
     - code
 
     An arbitrary coderef is passed a single argument, the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), and
     returns a boolean indicating if there is a match.
 
-        $test_ua->map(sub {
+        $test_ua->map_response(sub {
                 my $request = shift;
                 return 1 if $request->method eq 'GET' || $request->method eq 'POST';
             },
@@ -127,6 +127,10 @@ or
         HTTP::Response->new(...);
     }
 
+Instance mappings take priority over global (class method) mappings - if no
+matches are found from mappings added to the instance, the global mappings are
+then examined. After no matches have been found, a 404 response is returned.
+
 - `unmap_all(instance_only?)`
 
 When called as a class method, removes all mappings set up globally (across all
@@ -137,9 +141,7 @@ this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
 
-- `register_domain($domain, $app)`
-
-_New, in v0.006-TRIAL_
+- `register_psgi($domain, $app)`
 
 Register a particular [PSGI](http://search.cpan.org/perldoc?PSGI) app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
@@ -148,13 +150,16 @@ and the [PSGI](http://search.cpan.org/perldoc?PSGI) response is converted back t
 already have loaded [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI) or equivalent, as this is not done
 for you).
 
-Note that domain registrations take priority over response mappings. (_This
-ordering may change._)  Also, instance registrations take priority over global
-(class method) registrations.
+You can also use `register_psgi` with a regular expression as the first
+argument, or any of the other forms used by `map_response`, if you wish, as
+calling `$test_ua->register_psgi($domain, $app)` is equivalent to:
 
-- `unregister_domain($domain, instance_only?)`
+    $test_ua->map_response(
+        $domain,
+        sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
+    );
 
-_New, in v0.006-TRIAL_
+- `unregister_psgi($domain, instance_only?)`
 
 When called as a class method, removes a domain->PSGI app entry that had been
 registered globally.  Some mappings set up on an individual object may still
@@ -163,26 +168,12 @@ remain.
 When called as an object method, removes a domain registration that was made
 both globally and locally, unless a true value was passed as the second
 argument, in which case only the registration local to the object will be
-removed. This allows a different mapping made globally to take over.  However,
-if the only registration was global to begin with, _and_ you passed a true
-value as the second argument, use of that domain registration will be blocked
-_just from that instance_, but will continue to be available from other
-instances.
+removed. This allows a different mapping made globally to take over.
 
-- `unregister_all(instance_only?)`
+If you want to mask a global registration on just one particular instance,
+then add `undef` as a mapping on your instance:
 
-_New, in v0.006-TRIAL_
-
-When called as a class method, removes all domain registrations set up
-globally (across all objects). Registrations set up on an individual object
-will still remain.
-
-When called as an object method, removes _all_ registrations both globally
-and on this instance, unless a true value is passed as an argument, in which
-only registrations local to the object will be removed. (Any true value will
-do, so you can pass a meaningful string.) (There is _not_ special logic for
-blocking registrations from certain instances as available in
-`unregister_domain`.)
+    $useragent->map_response($domain, undef);
 
 - `last_http_request_sent`
 
