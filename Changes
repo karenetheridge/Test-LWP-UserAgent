@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.007     2012-08-14 13:56:50 PDT-0700 (Karen Etheridge)
           - cleanup of domain->PSGI app functionality for stable release:
             - string mappings in map_response now match against the URI host,
               not the full URI string
