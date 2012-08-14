@@ -1,4 +1,5 @@
 package Test::LWP::UserAgent;
+# ABSTRACT: a LWP::UserAgent suitable for simulating and testing network calls
 
 use strict;
 use warnings;
@@ -210,14 +211,6 @@ sub __is_regexp($)
 __END__
 
 =pod
-
-=head1 NAME
-
-Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing network calls
-
-=head1 VERSION
-
-version 0.007
 
 =head1 SYNOPSIS
 
@@ -469,14 +462,6 @@ L<LWP::UserAgent>
 
 L<PSGI>, L<HTTP::Message::PSGI>
 
-=head1 COPYRIGHT
-
-This software is copyright (c) 2012 by Karen Etheridge, <ether@cpan.org>.
-
-=head1 LICENSE
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
 =cut
 
+1;

@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.007
+version 0.008
 
 # SYNOPSIS
 
@@ -243,11 +243,13 @@ module, and from where I borrowed some aspects of the API.
 
 [PSGI](http://search.cpan.org/perldoc?PSGI), [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI)
 
-# COPYRIGHT
+# AUTHOR
 
-This software is copyright (c) 2012 by Karen Etheridge, <ether@cpan.org>.
+Karen Etheridge <ether@cpan.org>
 
-# LICENSE
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2012 by Karen Etheridge.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
