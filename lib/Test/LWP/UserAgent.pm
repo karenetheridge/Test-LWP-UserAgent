@@ -288,7 +288,7 @@ global.
 
 =over
 
-=item C<map_response($request_description, $http_response)>
+=item * C<map_response($request_description, $http_response)>
 
 With this method, you set up what L<HTTP::Response> should be returned for each
 request received.
@@ -297,7 +297,7 @@ The request match specification can be described in multiple ways:
 
 =over
 
-=item string
+=item * string
 
 The string is matched identically against the C<host> field of the L<URI> in the request.
 
@@ -305,7 +305,7 @@ Example:
 
     $test_ua->map_response('example.com', HTTP::Response->new(500));
 
-=item regexp
+=item * regexp
 
 The regexp is matched against the URI in the request.
 
@@ -314,7 +314,7 @@ Example:
     $test_ua->map_response(qr{foo/bar}, HTTP::Response->new(200));
     $test_ua->map_response(qr{baz/quux}, HTTP::Response->new(500));
 
-=item code
+=item * code
 
 An arbitrary coderef is passed a single argument, the L<HTTP::Request>, and
 returns a boolean indicating if there is a match.
@@ -326,7 +326,7 @@ returns a boolean indicating if there is a match.
         HTTP::Response->new(200),
     );
 
-=item L<HTTP::Request> object
+=item * L<HTTP::Request> object
 
 The L<HTTP::Request> object is matched identically (including all query
 parameters, headers etc) against the provided object.
@@ -350,7 +350,7 @@ Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
 then examined. After no matches have been found, a 404 response is returned.
 
-=item C<unmap_all(instance_only?)>
+=item * C<unmap_all(instance_only?)>
 
 When called as a class method, removes all mappings set up globally (across all
 objects). Mappings set up on an individual object will still remain.
@@ -360,7 +360,7 @@ this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
 
-=item C<register_psgi($domain, $app)>
+=item * C<register_psgi($domain, $app)>
 
 Register a particular L<PSGI> app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
@@ -378,7 +378,7 @@ calling C<< $test_ua->register_psgi($domain, $app) >> is equivalent to:
         sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
     );
 
-=item C<unregister_psgi($domain, instance_only?)>
+=item * C<unregister_psgi($domain, instance_only?)>
 
 When called as a class method, removes a domain->PSGI app entry that had been
 registered globally.  Some mappings set up on an individual object may still
@@ -394,20 +394,20 @@ then add C<undef> as a mapping on your instance:
 
     $useragent->map_response($domain, undef);
 
-=item C<last_http_request_sent>
+=item * C<last_http_request_sent>
 
 The last L<HTTP::Request> object that this object (if called on an object) or
 module (if called as a class method) processed, whether or not it matched a
 mapping you set up earlier.
 
-=item C<last_http_response_received>
+=item * C<last_http_response_received>
 
 The last L<HTTP::Response> object that this module returned, as a result of a
 mapping you set up earlier with C<map_response>. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
-=item C<send_request($request)>
+=item * C<send_request($request)>
 
 This is the only method from L<LWP::UserAgent> that has been overridden, which
 processes the L<HTTP::Request>, sends to the network, then creates the
@@ -441,10 +441,10 @@ sent to L<LWP::UserAgent>.
 
 =over
 
-=item Option to locally or globally override useragent implementations via
+=item * Option to locally or globally override useragent implementations via
 symbol table swap
 
-=item Ability to route certain requests through the real network, to gain the
+=item * Ability to route certain requests through the real network, to gain the
 benefits of C<last_http_request_sent> and C<last_http_response_received>
 
 =back
