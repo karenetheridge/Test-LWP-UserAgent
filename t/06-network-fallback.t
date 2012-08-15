@@ -8,7 +8,7 @@ BEGIN {
     }
 }
 
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Test::NoWarnings 1.04 ':early';
 use Test::Deep;
 
@@ -41,6 +41,7 @@ use HTTP::Request::Common;
     ok($useragent->network_fallback, 'network_fallback set on the other instance');
 
     test_send_request('network_fallback on other instance', $useragent2, POST('http://example.com'), 302);
+    test_send_request('network_fallback, with redirect', $useragent2, GET('http://example.com'), 200);
 
     Test::LWP::UserAgent->network_fallback(0);
     test_send_request('network_fallback clearable', $useragent2, POST('http://example.com'), 404);
