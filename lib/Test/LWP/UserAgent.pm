@@ -18,6 +18,7 @@ my $last_http_request_sent;
 my $last_http_response_received;
 my @response_map;
 my $network_fallback;
+my $last_useragent;
 
 sub new
 {
@@ -156,6 +157,11 @@ sub last_http_response_received
         : $last_http_response_received;
 }
 
+sub last_useragent
+{
+    return $last_useragent;
+}
+
 sub network_fallback
 {
     my ($self, $value) = @_;
@@ -215,6 +221,7 @@ sub send_request
         }
     }
 
+    $last_useragent = $self;
     $last_http_request_sent = $self->{__last_http_request_sent} = $request;
 
     if (not defined $matched_response and
@@ -360,6 +367,11 @@ or:
     # ... generate a request...
 
     # and then in your tests:
+    is(
+        $useragent->last_useragent->timeout,
+        180,
+        'timeout was overridden properly',
+    );
     is(
         $useragent->last_http_request_sent->uri,
         'uri my code should have constructed',
@@ -539,6 +551,13 @@ The last L<HTTP::Response> object that this module returned, as a result of a
 mapping you set up earlier with C<map_response>. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
+
+=item * C<last_useragent>
+
+The last Test::LWP::UserAgent object that was used to send a request.
+Obviously this only provides new information if called as a class method; you
+can use this if you don't have direct control over the useragent itself, to
+get the object that was used, to verify options such as the network timeout.
 
 =item * C<network_fallback>
 

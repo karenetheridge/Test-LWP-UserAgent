@@ -80,6 +80,11 @@ or:
 
     # and then in your tests:
     is(
+        $useragent->last_useragent->timeout,
+        180,
+        'timeout was overridden properly',
+    );
+    is(
         $useragent->last_http_request_sent->uri,
         'uri my code should have constructed',
     );
@@ -247,6 +252,13 @@ The last [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) object 
 mapping you set up earlier with `map_response`. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
+
+- `last_useragent`
+
+The last Test::LWP::UserAgent object that was used to send a request.
+Obviously this only provides new information if called as a class method; you
+can use this if you don't have direct control over the useragent itself, to
+get the object that was used, to verify options such as the network timeout.
 
 - `network_fallback`
 
