@@ -7,7 +7,7 @@ use Test::NoWarnings 1.04 ':early';
 use Test::Deep;
 
 use Test::LWP::UserAgent;
-use Storable 'freeze';
+use Scalar::Util 'refaddr';
 use HTTP::Request::Common;
 
 my $app_foo = sub {
@@ -122,8 +122,8 @@ sub test_send_request
     # response is what we stored in the useragent
     isa_ok($response, 'HTTP::Response');
     is(
-        freeze($useragent->last_http_response_received),
-        freeze($response),
+        refaddr($useragent->last_http_response_received),
+        refaddr($response),
         'last_http_response_received',
     );
 

@@ -6,7 +6,7 @@ use Test::NoWarnings 1.04 ':early';
 use Test::Deep;
 use Test::Fatal;
 use Test::Warn;
-use Storable 'freeze';
+use Scalar::Util 'refaddr';
 
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;
@@ -89,8 +89,8 @@ sub test_send_request
 
     isa_ok($response, 'HTTP::Response');
     is(
-        freeze($useragent->last_http_response_received),
-        freeze($response),
+        refaddr($useragent->last_http_response_received),
+        refaddr($response),
         'last_http_response_received',
     );
 
@@ -108,8 +108,8 @@ sub test_send_request
     );
 
     is(
-        freeze($useragent->last_http_request_sent),
-        freeze($response->request),
+        refaddr($useragent->last_http_request_sent),
+        refaddr($response->request),
         'request was stored in response',
     );
 

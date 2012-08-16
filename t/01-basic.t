@@ -5,7 +5,6 @@ use Test::More tests => 80;
 use Test::NoWarnings 1.04 ':early';
 use Test::Deep 0.110;
 use Scalar::Util 'refaddr';
-use Storable 'freeze';
 
 # simulates real code that we are testing
 {
@@ -171,8 +170,8 @@ sub test_send_request
     # response is what we stored in the useragent
     isa_ok($response, 'HTTP::Response');
     is(
-        freeze($MyApp::useragent->last_http_response_received),
-        freeze($response),
+        refaddr($MyApp::useragent->last_http_response_received),
+        refaddr($response),
         'last_http_response_received',
     );
 
