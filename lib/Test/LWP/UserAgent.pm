@@ -14,8 +14,6 @@ use HTTP::Date;
 use HTTP::Status qw(:constants status_message);
 use Try::Tiny;
 
-my $last_http_request_sent;
-my $last_http_response_received;
 my @response_map;
 my $network_fallback;
 my $last_useragent;
@@ -146,7 +144,9 @@ sub last_http_request_sent
     my $self = shift;
     return blessed($self)
         ? $self->{__last_http_request_sent}
-        : $last_http_request_sent;
+        : $last_useragent
+        ? $last_useragent->last_http_request_sent
+        : undef;
 }
 
 sub last_http_response_received
@@ -154,7 +154,9 @@ sub last_http_response_received
     my $self = shift;
     return blessed($self)
         ? $self->{__last_http_response_received}
-        : $last_http_response_received;
+        : $last_useragent
+        ? $last_useragent->last_http_response_received
+        : undef;
 }
 
 sub last_useragent
@@ -222,13 +224,13 @@ sub send_request
     }
 
     $last_useragent = $self;
-    $last_http_request_sent = $self->{__last_http_request_sent} = $request;
+    $self->{__last_http_request_sent} = $request;
 
     if (not defined $matched_response and
         ($self->{__network_fallback} or $network_fallback))
     {
         my $response = $self->SUPER::send_request($request);
-        $last_http_response_received = $self->{__last_http_response_received} = $response;
+        $self->{__last_http_response_received} = $response;
         return $response;
     }
 
@@ -279,7 +281,7 @@ sub send_request
     $self->run_handlers("response_done", $response);
     $self->progress("end", $response);
 
-    $last_http_response_received = $self->{__last_http_response_received} = $response;
+    $self->{__last_http_response_received} = $response;
 
     return $response;
 }
