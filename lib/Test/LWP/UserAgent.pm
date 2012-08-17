@@ -201,25 +201,19 @@ sub send_request
             $matched_response = $response, last
                 if freeze($request) eq freeze($request_desc);
         }
-        elsif (not reftype $request_desc)
-        {
-            $uri = URI->new($uri) if not eval { $uri->isa('URI') };
-            $matched_response = $response, last
-                if $uri->host eq $request_desc;
-        }
-        elsif (eval { \&$request_desc })
-        {
-            $matched_response = $response, last
-                if $request_desc->($request);
-        }
         elsif (__is_regexp $request_desc)
         {
             $matched_response = $response, last
-                if $request->uri =~ $request_desc;
+                if $uri =~ $request_desc;
         }
         else
         {
-            warn 'unknown request type found in ' . blessed($self) . ' mapping!';
+            $matched_response = $response, last
+                if eval { $request_desc->($request) };
+
+            $uri = URI->new($uri) if not eval { $uri->isa('URI') };
+            $matched_response = $response, last
+                if $uri->host eq $request_desc;
         }
     }
 
