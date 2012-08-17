@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use parent 'LWP::UserAgent';
-use Scalar::Util qw(blessed reftype);
+use Scalar::Util 'blessed';
 use Storable 'freeze';
 use HTTP::Request;
 use HTTP::Response;
@@ -39,12 +39,13 @@ sub map_response
 {
     my ($self, $request_description, $response) = @_;
 
-    if (not defined $response and not reftype $request_description and blessed $self)
+    if (not defined $response and blessed $self)
     {
+        # mask a global domain mapping
         my $matched;
         foreach my $mapping (@{$self->{__response_map}})
         {
-            if (not reftype $mapping->[0] and $mapping->[0] eq $request_description)
+            if ($mapping->[0] eq $request_description)
             {
                 $matched = 1;
                 undef $mapping->[1];
