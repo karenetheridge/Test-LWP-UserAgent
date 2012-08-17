@@ -41,19 +41,19 @@ sub map_response
 
     if (not defined $response and not reftype $request_description and blessed $self)
     {
-        # mask a global domain mapping
-        my @indexes = grep {
-            not reftype $_->[0] and $_->[0] eq $request_description
-        } @{$self->{__response_map}};
+        my $matched;
+        foreach my $mapping (@{$self->{__response_map}})
+        {
+            if (not reftype $mapping->[0] and $mapping->[0] eq $request_description)
+            {
+                $matched = 1;
+                undef $mapping->[1];
+            }
+        }
 
-        if (@indexes)
-        {
-            undef @{$self->{__response_map}}[@indexes];
-        }
-        else
-        {
-            push @{$self->{__response_map}}, [ $request_description, undef ];
-        }
+        push @{$self->{__response_map}}, [ $request_description, undef ]
+            if not $matched;
+
         return;
     }
 

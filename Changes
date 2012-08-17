@@ -9,6 +9,8 @@ Revision history for {{$dist->name}}
             object used globally
           - allow exact string matching against domains to work even for
             domains specified via a string-overloaded object
+          - bug fix: properly mask existing mappings in
+            $ua->map_response(..., undef) (v0.007)
 
 0.007     2012-08-14 13:56:50 PDT-0700 (Karen Etheridge)
           - cleanup of domain->PSGI app functionality for stable release:
