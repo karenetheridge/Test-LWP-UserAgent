@@ -308,11 +308,6 @@ throughout. It provides a method (`last_http_request_sent`) to access the last
 [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), for testing things like the URI and headers that your code
 sent to [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent).
 
-# TODO (possibly)
-
-- Option to locally or globally override useragent implementations via
-symbol table swap
-
 # ACKNOWLEDGEMENTS
 
 [AirG Inc.](http://corp.airg.com), my employer, and the first user of this distribution.
