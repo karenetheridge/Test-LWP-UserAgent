@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.008     2012-08-21 12:48:35 PDT-0700 (Karen Etheridge)
           - better handling when the response implementation dies, either
             with an error message or an HTTP::Response object
           - network_fallback and map_network_response features added, for
