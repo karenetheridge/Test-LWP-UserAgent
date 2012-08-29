@@ -78,6 +78,7 @@ sub map_network_response
 
     if (blessed $self)
     {
+        # we cannot call ::request here, or we end up in an infinite loop
         push @{$self->{__response_map}},
             [ $request_description, sub { $self->SUPER::send_request($_[0]) } ];
     }
