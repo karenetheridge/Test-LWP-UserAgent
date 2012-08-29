@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.009     2012-08-29 09:54:34 PDT-0700 (Karen Etheridge)
           - fix test to work with older (pre-6.00) LWP::UserAgent, when
             _new_response did not take a content argument
 
