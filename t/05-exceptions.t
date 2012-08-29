@@ -29,7 +29,10 @@ use HTTP::Request::Common;
             'Client-Warning' => 'Internal response',
             'Content-Type' => 'text/plain',
         ],
-        re(qr/\Qnetwork error! at $file line $line.\E/),
+        (LWP::UserAgent->VERSION < 6.00
+            ? "500 network error!\n"
+            : re(qr/\Qnetwork error! at $file line $line.\E/)
+        ),
     );
 
     test_send_request(

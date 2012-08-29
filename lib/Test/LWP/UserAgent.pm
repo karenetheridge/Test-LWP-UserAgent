@@ -252,6 +252,8 @@ sub send_request
                     (my $status = $exception) =~ s/\n.*//s;
                     $status =~ s/ at .* line \d+.*//s;  # remove file/line number
                     my $code = ($status =~ s/^(\d\d\d)\s+//) ? $1 : HTTP_INTERNAL_SERVER_ERROR;
+                    # note that _new_response did not always take a fourth
+                    # parameter - content used to always be "$code $message"
                     $response = LWP::UserAgent::_new_response($request, $code, $status, $full);
                 }
             }

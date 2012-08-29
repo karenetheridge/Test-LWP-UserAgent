@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - fix test to work with older (pre-6.00) LWP::UserAgent, when
+            _new_response did not take a content argument
 
 0.008     2012-08-21 12:48:35 PDT-0700 (Karen Etheridge)
           - better handling when the response implementation dies, either
