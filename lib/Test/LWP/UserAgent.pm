@@ -296,7 +296,7 @@ __END__
 
 =head1 SYNOPSIS
 
-In your real code:
+In your application code:
 
     use URI;
     use HTTP::Request::Common;
@@ -544,6 +544,8 @@ then add C<undef> as a mapping on your instance:
 The last L<HTTP::Request> object that this object (if called on an object) or
 module (if called as a class method) processed, whether or not it matched a
 mapping you set up earlier.
+
+Note that this is also available via C<< last_http_response_received->request >>.
 
 =item * C<last_http_response_received>
 
