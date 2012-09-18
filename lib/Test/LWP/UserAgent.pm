@@ -585,7 +585,7 @@ All other methods from L<LWP::UserAgent> are available unchanged.
 =head1 Use with SOAP requests
 
 To use this module when communicating with a SOAP server (either a real one,
-with live network requests, see above ... link here ..., or with one simulated
+with live network requests, L<see above|/network_fallback> or with one simulated
 with mapped responses), simply do this:
 
     use SOAP::Lite;
