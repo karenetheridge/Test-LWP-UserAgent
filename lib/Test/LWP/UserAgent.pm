@@ -584,7 +584,11 @@ All other methods from L<LWP::UserAgent> are available unchanged.
 
 =head1 Use with SOAP requests
 
-To use this module when communicating with a SOAP server (either a real one,
+=over
+
+=item * L<SOAP::Lite>
+
+To use this module when communicating via L<SOAP::Lite> with a SOAP server (either a real one,
 with live network requests, L<see above|/network_fallback> or with one simulated
 with mapped responses), simply do this:
 
@@ -593,6 +597,23 @@ with mapped responses), simply do this:
     $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
 
 See also L<SOAP::Transport/CHANGING THE DEFAULT USERAGENT CLASS>.
+
+=item * L<XML::Compile::SOAP>
+
+When using L<XML::Compile::SOAP> with a compiled WSDL, you can change the
+useragent object via L<XML::Compile::Transport::SOAPHTTP>:
+
+    my $call = $wsdl->compileClient(
+        $interface_name,
+        transport => XML::Compile::Transport::SOAPHTTP->new(
+            user_agent => $useragent,
+            address => $wsdl->endPoint,
+        ),
+    );
+
+See also L<XML::Compile::SOAP::FAQ/Adding HTTP headers>.
+
+=back
 
 =head1 MOTIVATION
 
