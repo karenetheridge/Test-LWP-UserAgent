@@ -13,6 +13,7 @@ use URI;
 use HTTP::Date;
 use HTTP::Status qw(:constants status_message);
 use Try::Tiny;
+use Safe::Isa;
 
 my @response_map;
 my $network_fallback;
@@ -60,7 +61,7 @@ sub map_response
 
     warn "map_response: response is not an HTTP::Response, it's a ",
             (blessed($response) || 'non-object')
-        unless eval { \&$response } or eval { $response->isa('HTTP::Response') };
+        unless eval { \&$response } or $response->$_isa('HTTP::Response');
 
     if (blessed $self)
     {
@@ -198,7 +199,7 @@ sub send_request
         next if not defined $entry;
         my ($request_desc, $response) = @$entry;
 
-        if (eval { $request_desc->isa('HTTP::Request') })
+        if ($request_desc->$_isa('HTTP::Request'))
         {
             $matched_response = $response, last
                 if freeze($request) eq freeze($request_desc);
@@ -213,7 +214,7 @@ sub send_request
             $matched_response = $response, last
                 if eval { $request_desc->($request) };
 
-            $uri = URI->new($uri) if not eval { $uri->isa('URI') };
+            $uri = URI->new($uri) if not $uri->$_isa('URI');
             $matched_response = $response, last
                 if $uri->host eq $request_desc;
         }
@@ -242,7 +243,7 @@ sub send_request
             $response = try { $response->($request) }
             catch {
                 my $exception = $_;
-                if (eval { $exception->isa('HTTP::Response') })
+                if ($exception->$_isa('HTTP::Response'))
                 {
                     $response = $exception;
                 }
@@ -264,7 +265,7 @@ sub send_request
         }
     }
 
-    if (not eval { $response->isa('HTTP::Response') })
+    if (not $response->$_isa('HTTP::Response'))
     {
         warn "response from coderef is not a HTTP::Response, it's a ",
             (blessed($response) || 'non-object');
