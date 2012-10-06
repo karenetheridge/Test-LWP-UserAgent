@@ -14,6 +14,7 @@ use HTTP::Date;
 use HTTP::Status qw(:constants status_message);
 use Try::Tiny;
 use Safe::Isa;
+use namespace::clean;
 
 my @response_map;
 my $network_fallback;
