@@ -4,11 +4,11 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.009
+version 0.010
 
 # SYNOPSIS
 
-In your real code:
+In your application code:
 
     use URI;
     use HTTP::Request::Common;
@@ -246,6 +246,8 @@ The last [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object th
 module (if called as a class method) processed, whether or not it matched a
 mapping you set up earlier.
 
+Note that this is also available via `last_http_response_received->request`.
+
 - `last_http_response_received`
 
 The last [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) object that this module returned, as a result of a
@@ -281,8 +283,10 @@ All other methods from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::User
 
 # Use with SOAP requests
 
-To use this module when communicating with a SOAP server (either a real one,
-with live network requests, see above ... link here ..., or with one simulated
+- [SOAP::Lite](http://search.cpan.org/perldoc?SOAP::Lite)
+
+To use this module when communicating via [SOAP::Lite](http://search.cpan.org/perldoc?SOAP::Lite) with a SOAP server (either a real one,
+with live network requests, [see above](#network\_fallback) or with one simulated
 with mapped responses), simply do this:
 
     use SOAP::Lite;
@@ -290,6 +294,21 @@ with mapped responses), simply do this:
     $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
 
 See also ["CHANGING THE DEFAULT USERAGENT CLASS" in SOAP::Transport](http://search.cpan.org/perldoc?SOAP::Transport#CHANGING THE DEFAULT USERAGENT CLASS).
+
+- [XML::Compile::SOAP](http://search.cpan.org/perldoc?XML::Compile::SOAP)
+
+When using [XML::Compile::SOAP](http://search.cpan.org/perldoc?XML::Compile::SOAP) with a compiled WSDL, you can change the
+useragent object via [XML::Compile::Transport::SOAPHTTP](http://search.cpan.org/perldoc?XML::Compile::Transport::SOAPHTTP):
+
+    my $call = $wsdl->compileClient(
+        $interface_name,
+        transport => XML::Compile::Transport::SOAPHTTP->new(
+            user_agent => $useragent,
+            address => $wsdl->endPoint,
+        ),
+    );
+
+See also ["Adding HTTP headers" in XML::Compile::SOAP::FAQ](http://search.cpan.org/perldoc?XML::Compile::SOAP::FAQ#Adding HTTP headers).
 
 # MOTIVATION
 
