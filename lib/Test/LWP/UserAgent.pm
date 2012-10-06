@@ -60,7 +60,7 @@ sub map_response
         return;
     }
 
-    warn "map_response: response is not an HTTP::Response, it's a ",
+    warn "map_response: response is not a coderef or an HTTP::Response, it's a ",
             (blessed($response) || 'non-object')
         unless eval { \&$response } or $response->$_isa('HTTP::Response');
 
