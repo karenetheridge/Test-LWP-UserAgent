@@ -4,6 +4,8 @@ Revision history for {{$dist->name}}
           - remove additional options in constructor before passing to
             LWP::UserAgent (was causing a carp when $^W was set) - thanks for
             the report and patch, Nigel Gregoire and Michael Schulthess!
+          - all remaining uses of eval eliminated, by using better heuristics
+            for "can be used as a coderef" logic
 
 0.010     2012-10-06 16:47:33 PDT-0700 (Karen Etheridge)
           - documentation on integration with XML::Compile::SOAP

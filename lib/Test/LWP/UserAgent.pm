@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use parent 'LWP::UserAgent';
-use Scalar::Util 'blessed';
+use Scalar::Util qw(blessed reftype);
 use Storable 'freeze';
 use HTTP::Request;
 use HTTP::Response;
@@ -19,6 +19,9 @@ use namespace::clean;
 my @response_map;
 my $network_fallback;
 my $last_useragent;
+
+sub __isa_coderef($);
+sub __is_regexp($);
 
 sub new
 {
@@ -64,7 +67,7 @@ sub map_response
 
     warn "map_response: response is not a coderef or an HTTP::Response, it's a ",
             (blessed($response) || 'non-object')
-        unless eval { \&$response } or $response->$_isa('HTTP::Response');
+        unless __isa_coderef($response) or $response->$_isa('HTTP::Response');
 
     if (blessed $self)
     {
@@ -117,7 +120,7 @@ sub register_psgi
     return $self->map_response($domain, undef) if not defined $app;
 
     warn "register_psgi: app is not a coderef, it's a ", ref($app)
-        unless eval { \&$app };
+        unless __isa_coderef($app);
 
     warn "register_psgi: did you forget to load HTTP::Message::PSGI?"
         unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
@@ -212,11 +215,13 @@ sub send_request
             $matched_response = $response, last
                 if $uri =~ $request_desc;
         }
-        else
+        elsif (__isa_coderef $request_desc)
         {
             $matched_response = $response, last
-                if eval { $request_desc->($request) };
-
+                if $request_desc->($request);
+        }
+        else
+        {
             $uri = URI->new($uri) if not $uri->$_isa('URI');
             $matched_response = $response, last
                 if $uri->host eq $request_desc;
@@ -238,7 +243,7 @@ sub send_request
         ? $matched_response
         : HTTP::Response->new(404);
 
-    if (eval { \&$response })
+    if (__isa_coderef $response)
     {
         # emulates handling in LWP::UserAgent::send_request
         if ($self->use_eval)
@@ -286,6 +291,13 @@ sub send_request
     $self->{__last_http_response_received} = $response;
 
     return $response;
+}
+
+sub __isa_coderef($)
+{
+    ref $_[0] eq 'CODE'
+        or (reftype($_[0]) || '') eq 'CODE'
+        or overload::Method($_[0], '&{}')
 }
 
 sub __is_regexp($)
