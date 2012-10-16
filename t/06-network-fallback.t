@@ -8,7 +8,7 @@ BEGIN {
     }
 }
 
-use Test::More tests => 25;
+use Test::More tests => 30;
 use Test::NoWarnings 1.04 ':early';
 
 use Test::LWP::UserAgent;
@@ -17,6 +17,9 @@ use HTTP::Request::Common;
 # I use POST rather than GET everywhere so as to not process the "302
 # Redirect" response - there is no need, and the first response is much
 # shorter than the second.
+
+# allow LWP::UserAgent to carp about unknown constructor arguments
+$^W = 1;
 
 {
     my $useragent = Test::LWP::UserAgent->new;
@@ -76,6 +79,18 @@ use HTTP::Request::Common;
     Test::LWP::UserAgent->map_network_response('example.com');
     test_send_request('network response mapped globally', $useragent2, POST('http://example.com'), 302);
     Test::LWP::UserAgent->unmap_all;
+}
+
+{
+    my $useragent = Test::LWP::UserAgent->new(network_fallback => 1);
+    my $useragent2 = Test::LWP::UserAgent->new;
+
+    ok(!Test::LWP::UserAgent->network_fallback, 'network_fallback not set globally');
+    ok($useragent->network_fallback, 'network_fallback enabled for the instance');
+    ok(!$useragent2->network_fallback, 'network_fallback not enabled for the other instance');
+
+    test_send_request('network_fallback on instance', $useragent, POST('http://example.com'), 302);
+    test_send_request('network_fallback on other instance', $useragent2, POST('http://example.com'), 404);
 }
 
 sub test_send_request

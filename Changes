@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - remove additional options in constructor before passing to
+            LWP::UserAgent (was causing a carp when $^W was set) - thanks for
+            the report and patch, Nigel Gregoire and Michael Schulthess!
 
 0.010     2012-10-06 16:47:33 PDT-0700 (Karen Etheridge)
           - documentation on integration with XML::Compile::SOAP
