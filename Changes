@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - Clearing network_fallback from %options before calling parent's
+          constructor.
 
 0.010     2012-10-06 16:47:33 PDT-0700 (Karen Etheridge)
           - documentation on integration with XML::Compile::SOAP
