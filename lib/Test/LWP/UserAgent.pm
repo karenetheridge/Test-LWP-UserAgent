@@ -24,11 +24,13 @@ sub new
 {
     my ($class, %options) = @_;
 
+    my $_network_fallback = delete $options{network_fallback}; # Not accepted by LWP::UserAgent;
+
     my $self = $class->SUPER::new(%options);
     $self->{__last_http_request_sent} = undef;
     $self->{__last_http_response_received} = undef;
     $self->{__response_map} = [];
-    $self->{__network_fallback} = $options{network_fallback};
+    $self->{__network_fallback} = $_network_fallback;
 
     # strips default User-Agent header added by LWP::UserAgent, to make it
     # easier to define literal HTTP::Requests to match against
