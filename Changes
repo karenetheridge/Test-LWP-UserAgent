@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.011     2012-10-16 11:37:48 PDT-0700 (Karen Etheridge)
           - remove additional options in constructor before passing to
             LWP::UserAgent (was causing a carp when $^W was set) - thanks for
             the report and patch, Nigel Gregoire and Michael Schulthess!
