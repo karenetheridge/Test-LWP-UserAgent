@@ -668,7 +668,7 @@ L<Test::Mock::LWP::UserAgent>
 
 L<LWP::UserAgent>
 
-L<PSGI>, L<HTTP::Message::PSGI>
+L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>
 
 =cut
 
