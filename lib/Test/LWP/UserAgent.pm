@@ -598,7 +598,7 @@ in which case unmatched requests will be delivered to the network.)
 
 All other methods from L<LWP::UserAgent> are available unchanged.
 
-=head1 Use with SOAP requests
+=head1 Usage with SOAP requests
 
 =over
 
@@ -611,6 +611,8 @@ with mapped responses), simply do this:
     use SOAP::Lite;
     use SOAP::Transport::HTTP;
     $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
+
+You must then make all your configuration changes and mappings globally.
 
 See also L<SOAP::Transport/CHANGING THE DEFAULT USERAGENT CLASS>.
 
