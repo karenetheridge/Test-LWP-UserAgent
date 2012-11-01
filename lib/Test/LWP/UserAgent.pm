@@ -154,8 +154,8 @@ sub last_http_request_sent
     return blessed($self)
         ? $self->{__last_http_request_sent}
         : $last_useragent
-        ? $last_useragent->last_http_request_sent
-        : undef;
+            ? $last_useragent->last_http_request_sent
+            : undef;
 }
 
 sub last_http_response_received
@@ -164,8 +164,8 @@ sub last_http_response_received
     return blessed($self)
         ? $self->{__last_http_response_received}
         : $last_useragent
-        ? $last_useragent->last_http_response_received
-        : undef;
+            ? $last_useragent->last_http_response_received
+            : undef;
 }
 
 sub last_useragent
