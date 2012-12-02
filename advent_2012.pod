@@ -85,7 +85,7 @@ responses to send:
 
 =head1 SUMMARY
 
-Use Test::LWP::UserAgent to control data flow that you would otherwise receive
+Use L<Test::LWP::UserAgent> to control data flow that you would otherwise receive
 over the network, to test your application's handling of that data.
 
 =head1 CODE EXAMPLES
