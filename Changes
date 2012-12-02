@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.012     2012-12-01 22:57:01 PST-0800 (Karen Etheridge)
           - examples/ directory added, containing fleshed-out code snippets
             used in the article for the 2012 Perl Advent Calendar, and a
             detailed example of some unit tests for a client library
