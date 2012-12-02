@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - examples/ directory added, containing fleshed-out code snippets
+            used in the article for the 2012 Perl Advent Calendar, and a
+            detailed example of some unit tests for a client library
 
 0.011     2012-10-16 11:37:48 PDT-0700 (Karen Etheridge)
           - remove additional options in constructor before passing to
