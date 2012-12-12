@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.013
+version 0.014
 
 # SYNOPSIS
 
@@ -346,7 +346,7 @@ module, and from where I borrowed some aspects of the API.
 
 # SEE ALSO
 
-[http://www.perladvent.org/2012/2012-12-12.html](#entry for Perl Advent 2012)
+[entry for Perl Advent 2012](http://www.perladvent.org/2012/2012-12-12.html)
 
 [Test::Mock::LWP::Dispatch](http://search.cpan.org/perldoc?Test::Mock::LWP::Dispatch)
 
