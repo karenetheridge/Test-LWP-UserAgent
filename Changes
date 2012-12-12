@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - fix advent link in pod
 
 0.013     2012-12-12 10:24:49 PST-0800 (Karen Etheridge)
           - silly mistake in examples/application_client_test.pl fixed

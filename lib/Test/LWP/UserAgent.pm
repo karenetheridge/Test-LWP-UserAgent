@@ -667,7 +667,7 @@ module, and from where I borrowed some aspects of the API.
 
 =head1 SEE ALSO
 
-L<http://www.perladvent.org/2012/2012-12-12.html|entry for Perl Advent 2012>
+L<entry for Perl Advent 2012|http://www.perladvent.org/2012/2012-12-12.html>
 
 L<Test::Mock::LWP::Dispatch>
 
