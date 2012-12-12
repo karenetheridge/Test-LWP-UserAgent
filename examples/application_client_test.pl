@@ -12,8 +12,10 @@ use warnings;
 
 use Test::More tests => 4;
 use Test::Warn;
-#use MyApp::Client; (included inline below)
 use Test::LWP::UserAgent;
+
+use lib 'examples';
+use MyApp::Client;
 
 my $useragent = Test::LWP::UserAgent->new;
 # this is what LWP::UserAgent effectively does when it encounters a timeout
@@ -46,41 +48,4 @@ is_deeply(\@ids, [], 'no ids returned for non-existent user');
 
 @ids = $client->get_indexes(user => 'barney');
 is_deeply(\@ids, [ 76 ], 'one id returned for regular user');
-
-
-package MyApp::Client;
-use strict;
-use warnings;
-
-use Moose;
-use LWP::UserAgent;
-use JSON;
-
-has useragent => (
-    is => 'ro', isa => 'LWP::UserAgent',
-    lazy => 1,
-    default => sub { LWP::UserAgent->new },
-);
-
-sub get_indexes
-{
-    my ($self, %args) = @_;
-
-    my $user = $args{user};
-
-    # call our server to get the data
-    my $url = "http://myserver.com/user/$user";
-    my $response = $useragent->get($url);
-
-    if ($response->code ne '200'
-        or $response->headers->content_type ne 'application/json')
-    {
-        warn "network timeout when fetching $url" if $response->decoded_content =~ /^read timeout/;
-        return;
-    }
-
-    # parse JSON data from response
-    my $data = decode_json($response->decoded_content);
-    return @{$data->{post_ids} // []};
-}
 

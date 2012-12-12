@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - silly mistake in examples/application_client_test.pl fixed
 
 0.012     2012-12-01 22:57:01 PST-0800 (Karen Etheridge)
           - examples/ directory added, containing fleshed-out code snippets
