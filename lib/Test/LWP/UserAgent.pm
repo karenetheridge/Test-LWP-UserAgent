@@ -366,7 +366,7 @@ And then:
 
     # <now test that your code responded to the 200 response properly...>
 
-This feature is useful for testing your PSGI apps (you may or may not find
+This feature is useful for testing your PSGI applications (you may or may not find
 using L<Plack::Test> easier), or for simulating a server so as to test your
 client code.
 
