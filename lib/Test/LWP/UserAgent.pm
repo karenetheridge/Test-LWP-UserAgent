@@ -681,5 +681,3 @@ L<LWP::UserAgent>
 L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>
 
 =cut
-
-1;
