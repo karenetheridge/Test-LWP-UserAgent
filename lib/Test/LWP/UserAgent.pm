@@ -398,6 +398,9 @@ or:
         'I should have gotten an OK response',
     );
 
+Note that L<LWP::UserAgent> itself is not monkey-patched - you must use
+this module (or a subclass) to send your request, or it cannot be caught and
+processed.
 
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
