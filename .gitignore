@@ -16,7 +16,6 @@ cover_db
 test-mydeps-*
 nytprof*
 /inc/
-!.gitignore
 .*.sw?
 /Test-Mock-LWP-UserAgent-*
 /Test-LWP-UserAgent-*
