@@ -30,7 +30,7 @@ outbound request.
     # prints 404
     say $response->code;
 
-In the above example, no outbound reqest passing through this useragent will
+In the above example, no outbound request passing through this useragent will
 use the live network (this is the default behaviour). Any request whose URI
 matches C</example.com/> will receive an HTTP 200 response, and the remaining
 requests will return a 404.
