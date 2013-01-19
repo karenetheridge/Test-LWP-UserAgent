@@ -188,8 +188,6 @@ sub network_fallback
     $network_fallback = $value;
 }
 
-sub __is_regexp($);
-
 sub send_request
 {
     my ($self, $request) = @_;
