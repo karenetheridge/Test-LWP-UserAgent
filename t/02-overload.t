@@ -23,7 +23,7 @@ use Class::Load 'try_load_class';
         sub
         {
             ::isa_ok($_[0], 'HTTP::Request');
-            HTTP::Response->new(202)
+            HTTP::Response->new('202')
         }
     };
 }
@@ -52,7 +52,7 @@ use Class::Load 'try_load_class';
     my $response = $useragent->get('http://localhost');
 
     isa_ok($response, 'HTTP::Response');
-    is($response->code, 202, 'response from overload');
+    is($response->code, '202', 'response from overload');
 }
 
 SKIP: {
@@ -61,14 +61,14 @@ SKIP: {
 
     my $useragent = Test::LWP::UserAgent->new;
     $useragent->register_psgi(MyHost->new('localhost'),
-        sub { [ 200, [], ['home sweet home'] ] });
+        sub { [ '200', [], ['home sweet home'] ] });
 
     my $response = $useragent->get('http://localhost');
     isa_ok($response, 'HTTP::Response');
     cmp_deeply(
         $response,
         methods(
-            code => 200,
+            code => '200',
             content => "home sweet home",
         ),
         'response from string overload',
@@ -76,6 +76,6 @@ SKIP: {
 
     $useragent->unregister_psgi(MyHost->new('localhost'));
     $response = $useragent->get('http://localhost');
-    is($response->code, 404, 'mapping removed via str overload comparison');
+    is($response->code, '404', 'mapping removed via str overload comparison');
 }
 

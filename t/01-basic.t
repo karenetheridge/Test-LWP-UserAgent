@@ -135,24 +135,24 @@ cmp_deeply(
     );
 
     # create one new mapping on this instance, and confirm it takes priority
-    $MyApp::useragent->map_response(qr{foo.+fail}, HTTP::Response->new(401));
+    $MyApp::useragent->map_response(qr{foo.+fail}, HTTP::Response->new('401'));
     test_send_request(
-        'regexp fail', 'POST', 'http://foo', 3000, 'fail', { a => 1 },
-            str('http://foo:3000/fail'), 'a=1', 401,  # globally, returning 500
+        'regexp fail', 'POST', 'http://foo', '3000', 'fail', { a => 1 },
+            str('http://foo:3000/fail'), 'a=1', '401',  # globally, returning 500
     );
 
     $MyApp::useragent->unmap_all('this_instance_only');
 
     test_send_request(
-        'global mappings are still in effect', 'GET', 'http://foo', 3000, 'success', { a => 1 },
-            str('http://foo:3000/success?a=1'), '', 200,
+        'global mappings are still in effect', 'GET', 'http://foo', '3000', 'success', { a => 1 },
+            str('http://foo:3000/success?a=1'), '', '200',
     );
 
     $MyApp::useragent->unmap_all;
 
     test_send_request(
-        'all mappings are now gone', 'GET', 'http://foo', 3000, 'success', { a => 1 },
-            str('http://foo:3000/success?a=1'), '', 404,
+        'all mappings are now gone', 'GET', 'http://foo', '3000', 'success', { a => 1 },
+            str('http://foo:3000/success?a=1'), '', '404',
     );
 }
 

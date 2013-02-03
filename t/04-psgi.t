@@ -12,27 +12,27 @@ use HTTP::Request::Common;
 
 my $app_foo = sub {
     my $env = shift;
-    return [ 200, ['Content-Type' => 'text/plain' ], [ 'this is the foo app' ]];
+    return [ '200', ['Content-Type' => 'text/plain' ], [ 'this is the foo app' ]];
 };
 
 my $app_foo2 = sub {
     my $env = shift;
-    return [ 200, ['Content-Type' => 'text/html' ], [ 'this is the alternative foo app' ]];
+    return [ '200', ['Content-Type' => 'text/html' ], [ 'this is the alternative foo app' ]];
 };
 
 my $app_bar = sub {
     my $env = shift;
-    return [ 200, ['Content-Type' => 'text/html' ], [ 'this is the bar app' ]];
+    return [ '200', ['Content-Type' => 'text/html' ], [ 'this is the bar app' ]];
 };
 
 my $app_bar2 = sub {
     my $env = shift;
-    return [ 200, ['Content-Type' => 'text/plain' ], [ 'this is the alternative bar app' ]];
+    return [ '200', ['Content-Type' => 'text/plain' ], [ 'this is the alternative bar app' ]];
 };
 
 my $app_baz = sub {
     my $env = shift;
-    return [ 200, ['Content-Type' => 'image/jpeg' ], [ 'this is the baz app' ]];
+    return [ '200', ['Content-Type' => 'image/jpeg' ], [ 'this is the baz app' ]];
 };
 
 {
@@ -45,34 +45,34 @@ my $app_baz = sub {
     $useragent2->register_psgi('baz', $app_baz);
 
     test_send_request('foo app (registered globally)', $useragent, GET('http://foo'),
-        200, [ 'Content-Type' => 'text/plain' ], 'this is the foo app');
+        '200', [ 'Content-Type' => 'text/plain' ], 'this is the foo app');
 
     $useragent->register_psgi('foo' , $app_foo2);
 
     test_send_request('foo app (registered on the object)', $useragent, GET('http://foo'),
-        200, [ 'Content-Type' => 'text/html' ], 'this is the alternative foo app');
+        '200', [ 'Content-Type' => 'text/html' ], 'this is the alternative foo app');
 
     # the object registration takes priority
     test_send_request('bar app (registered on the object)', $useragent, GET(URI->new('http://bar')),
-        200, [ 'Content-Type' => 'text/html' ], 'this is the bar app');
+        '200', [ 'Content-Type' => 'text/html' ], 'this is the bar app');
 
     test_send_request('baz app (registered on the second object)', $useragent2, GET('http://baz'),
-        200, [ 'Content-Type' => 'image/jpeg' ], 'this is the baz app');
+        '200', [ 'Content-Type' => 'image/jpeg' ], 'this is the baz app');
 
     test_send_request('unmatched request', $useragent, GET('http://quux'),
-        404, [ ], '');
+        '404', [ ], '');
 
 
     $useragent->unregister_psgi('bar', 'this_instance_only');
 
     test_send_request('backup bar app is now available to this instance', $useragent, GET('http://bar'),
-        200, [ 'Content-Type' => 'text/plain' ], 'this is the alternative bar app');
+        '200', [ 'Content-Type' => 'text/plain' ], 'this is the alternative bar app');
 
     $useragent->unregister_psgi('bar');
 
     test_send_request('bar app (was registered on the instance, but now removed everywhere)',
         $useragent, GET('http://bar'),
-        404, [ ], '');
+        '404', [ ], '');
 
 
     # mask a mapping from just this one instance
@@ -80,34 +80,34 @@ my $app_baz = sub {
 
     test_send_request('foo app was registered on both, but now removed from the instance only',
         $useragent, GET('http://foo'),
-        200, [ 'Content-Type' => 'text/plain' ], 'this is the foo app');
+        '200', [ 'Content-Type' => 'text/plain' ], 'this is the foo app');
 
     test_send_request('foo app (registered globally; still available for other instances)',
         $useragent2, GET('http://foo'),
-        200, [ 'Content-Type' => 'text/plain' ], 'this is the foo app');
+        '200', [ 'Content-Type' => 'text/plain' ], 'this is the foo app');
 
     # mask the global mapping entirely
     $useragent->register_psgi('foo', undef);
     test_send_request('foo app was registered globally, but now removed from the instance only',
         $useragent, GET('http://foo'),
-        404, [ ], '');
+        '404', [ ], '');
 
 
     $useragent->unmap_all('this_instance_only');
 
     test_send_request('baz app is not available on this instance', $useragent, GET('http://baz'),
-        404, [ ], '');
+        '404', [ ], '');
 
     test_send_request('baz app is still available on other instances', $useragent2, GET('http://baz'),
-        200, [ 'Content-Type' => 'image/jpeg' ], 'this is the baz app');
+        '200', [ 'Content-Type' => 'image/jpeg' ], 'this is the baz app');
 
     $useragent->unmap_all;
 
     test_send_request('bar app now removed', $useragent, GET('http://baz'),
-        404, [ ], '');
+        '404', [ ], '');
 
     test_send_request('baz app now removed', $useragent, GET('http://baz'),
-        404, [ ], '');
+        '404', [ ], '');
 }
 
 sub test_send_request

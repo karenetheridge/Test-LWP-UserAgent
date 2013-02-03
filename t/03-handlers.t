@@ -16,7 +16,7 @@ my @response_phases = qw(response_done response_redirect);
     my $useragent = Test::LWP::UserAgent->new;
     $useragent->map_response(
         qr/localhost/,
-        HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], 'all good!'),
+        HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/plain'], 'all good!'),
     );
 
     my %phase_called;

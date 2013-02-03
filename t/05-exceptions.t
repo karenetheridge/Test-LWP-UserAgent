@@ -15,7 +15,7 @@ use HTTP::Request::Common;
     my $useragent = Test::LWP::UserAgent->new;
 
     $useragent->map_response(qr/generic_error/, sub { die 'network error!' }); my $line = __LINE__;
-    $useragent->map_response(qr/http_response_error/, sub { die HTTP::Response->new(504) });
+    $useragent->map_response(qr/http_response_error/, sub { die HTTP::Response->new('504') });
     $useragent->map_response(qr/no_response_returned/, sub { return 'hi!' });
 
     my $file = __FILE__;
@@ -24,7 +24,7 @@ use HTTP::Request::Common;
         'unexpected death',
         $useragent,
         GET('http://localhost/generic_error'),
-        500,
+        '500',
         [
             'Client-Warning' => 'Internal response',
             'Content-Type' => 'text/plain',
@@ -39,7 +39,7 @@ use HTTP::Request::Common;
         'HTTP::Response death',
         $useragent,
         GET('http://localhost/http_response_error'),
-        504,
+        '504',
         [ ],
         '',
         undef,
@@ -49,7 +49,7 @@ use HTTP::Request::Common;
         'no death, but did not return HTTP::Response',
         $useragent,
         GET('http://localhost/no_response_returned'),
-        500,
+        '500',
         [],
         "500 Internal Server Error\n",
         qr/response from coderef is not a HTTP::Response, it's a non-object at /,
