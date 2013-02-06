@@ -25,7 +25,7 @@ sub get_indexes
     if ($response->code ne '200'
         or $response->headers->content_type ne 'application/json')
     {
-        warn "network timeout when fetching $url" if $response->decoded_content =~ /^read timeout/;
+        warn "network timeout when fetching $url" if $response->decoded_content =~ /time(?:d )?out/;
         return;
     }
 
