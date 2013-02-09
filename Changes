@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - can now create a mapping on a class name or an object where that
+            class or object implements the 'request' method (from a suggestion
+            by mst)
 
 0.014     2012-12-12 10:29:39 PST-0800 (Karen Etheridge)
           - fix advent link in pod

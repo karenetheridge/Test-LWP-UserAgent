@@ -65,6 +65,13 @@ sub map_response
         return;
     }
 
+    if (not $response->$_isa('HTTP::Response') and try { $response->can('request') })
+    {
+        my $oldres = $response;
+        $response = sub {
+            $oldres->request($_[0]) };
+    }
+
     warn "map_response: response is not a coderef or an HTTP::Response, it's a ",
             (blessed($response) || 'non-object')
         unless __isa_coderef($response) or $response->$_isa('HTTP::Response');
