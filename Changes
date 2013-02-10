@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.015     2013-02-09 16:55:18 PST-0800 (Karen Etheridge)
           - can now create a mapping on a class name or an object where that
             class or object implements the 'request' method (from a suggestion
             by mst)

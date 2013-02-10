@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.014
+version 0.015
 
 # SYNOPSIS
 
@@ -62,7 +62,7 @@ And then:
 
     # <now test that your code responded to the 200 response properly...>
 
-This feature is useful for testing your PSGI apps (you may or may not find
+This feature is useful for testing your PSGI applications (you may or may not find
 using [Plack::Test](http://search.cpan.org/perldoc?Plack::Test) easier), or for simulating a server so as to test your
 client code.
 
@@ -93,6 +93,10 @@ or:
         200,
         'I should have gotten an OK response',
     );
+
+Note that [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) itself is not monkey-patched - you must use
+this module (or a subclass) to send your request, or it cannot be caught and
+processed.
 
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
@@ -362,7 +366,7 @@ Karen Etheridge <ether@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Karen Etheridge.
+This software is copyright (c) 2013 by Karen Etheridge.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
