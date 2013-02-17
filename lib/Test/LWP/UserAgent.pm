@@ -20,9 +20,6 @@ my @response_map;
 my $network_fallback;
 my $last_useragent;
 
-sub __isa_coderef($);
-sub __is_regexp($);
-
 sub new
 {
     my ($class, %options) = @_;
@@ -215,12 +212,12 @@ sub send_request
             $matched_response = $response, last
                 if freeze($request) eq freeze($request_desc);
         }
-        elsif (__is_regexp $request_desc)
+        elsif (__is_regexp($request_desc))
         {
             $matched_response = $response, last
                 if $uri =~ $request_desc;
         }
-        elsif (__isa_coderef $request_desc)
+        elsif (__isa_coderef($request_desc))
         {
             $matched_response = $response, last
                 if $request_desc->($request);
@@ -248,7 +245,7 @@ sub send_request
         ? $matched_response
         : HTTP::Response->new(404);
 
-    if (__isa_coderef $response)
+    if (__isa_coderef($response))
     {
         # emulates handling in LWP::UserAgent::send_request
         if ($self->use_eval)
@@ -298,14 +295,14 @@ sub send_request
     return $response;
 }
 
-sub __isa_coderef($)
+sub __isa_coderef
 {
     ref $_[0] eq 'CODE'
         or (reftype($_[0]) || '') eq 'CODE'
         or overload::Method($_[0], '&{}')
 }
 
-sub __is_regexp($)
+sub __is_regexp
 {
     $^V < 5.009005 ? ref(shift) eq 'Regexp' : re::is_regexp(shift);
 }
