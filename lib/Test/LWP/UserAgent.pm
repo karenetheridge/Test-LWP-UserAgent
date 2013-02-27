@@ -14,6 +14,7 @@ use HTTP::Date;
 use HTTP::Status qw(:constants status_message);
 use Try::Tiny;
 use Safe::Isa;
+use Carp;
 use namespace::clean;
 
 my @response_map;
@@ -69,7 +70,7 @@ sub map_response
             $oldres->request($_[0]) };
     }
 
-    warn "map_response: response is not a coderef or an HTTP::Response, it's a ",
+    carp "map_response: response is not a coderef or an HTTP::Response, it's a ",
             (blessed($response) || 'non-object')
         unless __isa_coderef($response) or $response->$_isa('HTTP::Response');
 
@@ -111,7 +112,7 @@ sub unmap_all
     }
     else
     {
-        warn 'instance-only unmap requests make no sense when called globally'
+        carp 'instance-only unmap requests make no sense when called globally'
             if $instance_only;
         @response_map = ();
     }
@@ -123,10 +124,10 @@ sub register_psgi
 
     return $self->map_response($domain, undef) if not defined $app;
 
-    warn "register_psgi: app is not a coderef, it's a ", ref($app)
+    carp "register_psgi: app is not a coderef, it's a ", ref($app)
         unless __isa_coderef($app);
 
-    warn "register_psgi: did you forget to load HTTP::Message::PSGI?"
+    carp "register_psgi: did you forget to load HTTP::Message::PSGI?"
         unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
 
     return $self->map_response(
@@ -277,7 +278,7 @@ sub send_request
 
     if (not $response->$_isa('HTTP::Response'))
     {
-        warn "response from coderef is not a HTTP::Response, it's a ",
+        carp "response from coderef is not a HTTP::Response, it's a ",
             (blessed($response) || 'non-object');
         $response = LWP::UserAgent::_new_response($request, HTTP_INTERNAL_SERVER_ERROR, status_message(HTTP_INTERNAL_SERVER_ERROR));
     }
