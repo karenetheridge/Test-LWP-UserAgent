@@ -22,14 +22,14 @@ my $useragent = Test::LWP::UserAgent->new;
 $useragent->map_response(qr{user/timeout}, sub { die 'read timeout' });
 $useragent->map_response(
     qr{user/fred},
-    HTTP::Response->new(404, HTTP::Status::status_message(404),
+    HTTP::Response->new('404', HTTP::Status::status_message('404'),
         [ 'Content-Type' => 'text/plain' ],
         'user fred does not exist',
     ),
 );
 $useragent->map_response(
     qr{user/barney},
-    HTTP::Response->new(200, HTTP::Status::status_message(200),
+    HTTP::Response->new('200', HTTP::Status::status_message('200'),
         [ 'Content-Type' => 'application/json' ],
         '{"user":"barney","userid":"50","blog_posts":"1","post_ids":["76"]}',
     ),

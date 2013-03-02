@@ -244,7 +244,7 @@ sub send_request
 
     my $response = defined $matched_response
         ? $matched_response
-        : HTTP::Response->new(404);
+        : HTTP::Response->new('404');
 
     if (__isa_coderef($response))
     {
@@ -324,7 +324,7 @@ In your application code:
     my $ua = $self->useragent || LWP::UserAgent->new;
 
     my $uri = URI->new('http://example.com');
-    $uri->port(3000);
+    $uri->port('3000');
     $uri->path('success');
     my $request = POST($uri, a => 1);
     my $response = $ua->request($request);
@@ -335,16 +335,16 @@ Then, in your tests:
     use Test::More;
 
     Test::LWP::UserAgent->map_response(
-        qr{example.com/success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
+        qr{example.com/success}, HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
-        qr{example.com/fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
+        qr{example.com/fail}, HTTP::Response->new('500', 'ERROR', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
         qr{example.com/conditional},
         sub {
             my $request = shift;
             my $success = $request->uri =~ /success/;
             return HTTP::Response->new(
-                ($success ? ( 200, 'OK') : (500, 'ERROR'),
+                ($success ? ( '200', 'OK') : ('500', 'ERROR'),
                 ['Content-Type' => 'text/plain'], '')
             )
         },
@@ -356,7 +356,7 @@ OR, you can use a L<PSGI> app to handle the requests:
     Test::LWP::UserAgent->register_psgi('example.com' => sub {
         my $env = shift;
         # logic here...
-        [ 200, [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
+        [ '200', [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
     );
 
 And then:
@@ -397,7 +397,7 @@ or:
     );
     is(
         $useragent->last_http_response_received->code,
-        200,
+        '200',
         'I should have gotten an OK response',
     );
 
@@ -459,7 +459,7 @@ The string is matched identically against the C<host> field of the L<URI> in the
 
 Example:
 
-    $test_ua->map_response('example.com', HTTP::Response->new(500));
+    $test_ua->map_response('example.com', HTTP::Response->new('500'));
 
 =item * regexp
 
@@ -467,8 +467,8 @@ The regexp is matched against the URI in the request.
 
 Example:
 
-    $test_ua->map_response(qr{foo/bar}, HTTP::Response->new(200));
-    $test_ua->map_response(qr{baz/quux}, HTTP::Response->new(500));
+    $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
+    $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
 
 =item * code
 
@@ -479,7 +479,7 @@ returns a boolean indicating if there is a match.
             my $request = shift;
             return 1 if $request->method eq 'GET' || $request->method eq 'POST';
         },
-        HTTP::Response->new(200),
+        HTTP::Response->new('200'),
     );
 
 =item * L<HTTP::Request> object

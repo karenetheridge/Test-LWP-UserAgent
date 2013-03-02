@@ -23,7 +23,7 @@ use Test::LWP::UserAgent;
     sub request
     {
         my ($self, $request) = @_;
-        HTTP::Response->new(200, undef, [], 'response from ' . $request->uri);
+        HTTP::Response->new('200', undef, [], 'response from ' . $request->uri);
     }
 }
 
@@ -44,7 +44,7 @@ cmp_deeply(
     all(
         isa('HTTP::Response'),
         methods(
-            code => 200,
+            code => '200',
             content => 'response from http://foo.com',
         ),
     ),
@@ -56,7 +56,7 @@ cmp_deeply(
     all(
         isa('HTTP::Response'),
         methods(
-            code => 200,
+            code => '200',
             content => 'response from http://bar.com',
         ),
     ),
@@ -70,7 +70,7 @@ warning_is
             all(
                 isa('HTTP::Response'),
                 methods(
-                    code => 500,
+                    code => '500',
                 ),
             ),
             'cannot dispatch to a bare string',

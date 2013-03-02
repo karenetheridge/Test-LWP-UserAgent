@@ -73,38 +73,38 @@ cmp_deeply(
 
 # class methods
 {
-    $class->map_response('foo.b.com', HTTP::Response->new(201));
-    $class->map_response(qr{foo.+success}, HTTP::Response->new(200));
-    $class->map_response(qr{foo.+fail}, HTTP::Response->new(500));
+    $class->map_response('foo.b.com', HTTP::Response->new('201'));
+    $class->map_response(qr{foo.+success}, HTTP::Response->new('200'));
+    $class->map_response(qr{foo.+fail}, HTTP::Response->new('500'));
     $class->map_response(sub {
             ::isa_ok($_[0], 'HTTP::Request');
             $_[0]->method eq 'HEAD'
-        }, HTTP::Response->new(304));
-    $class->map_response(HTTP::Request->new('DELETE', 'http://foo.a.com:3003/blah'), HTTP::Response->new(202));
+        }, HTTP::Response->new('304'));
+    $class->map_response(HTTP::Request->new('DELETE', 'http://foo.a.com:3003/blah'), HTTP::Response->new('202'));
     $class->map_response(qr{conditional},
         sub {
             ::isa_ok($_[0], 'HTTP::Request');
-            HTTP::Response->new(shift->uri =~ /success/ ? 200 : 550)
+            HTTP::Response->new(shift->uri =~ /success/ ? '200' : '550')
         }
     );
 
     $MyApp::useragent = $class->new;
 
     foreach my $test (
-        [ 'regexp success', 'GET', 'http://foo.a.com', 3000, 'success', { a => 1 },
-            str('http://foo.a.com:3000/success?a=1'), '', 200 ],
-        [ 'regexp fail', 'POST', 'http://foo.a.com', 3000, 'fail', { a => 1 },
-            str('http://foo.a.com:3000/fail'), 'a=1', 500 ],
-        [ 'string success', 'GET', 'http://foo.b.com', 3001, 'success', { a => 1 },
-            str('http://foo.b.com:3001/success?a=1'), '', 201 ],
-        [ 'subref redirect', 'HEAD', 'http://foo.a.com',  3002, 'blah', {},
-            str('http://foo.a.com:3002/blah'), '', 304 ],
-        [ 'literal object', 'DELETE', 'http://foo.a.com', 3003, 'blah', {},
-            str('http://foo.a.com:3003/blah'), '', 202 ],
-        [ 'response is coderef (success)', 'GET', 'http://conditional', 3004, 'success', {},
-            str('http://conditional:3004/success'), '', 200 ],
-        [ 'response is coderef (fail)', 'GET', 'http://conditional', 3004, 'fail', {},
-            str('http://conditional:3004/fail'), '', 550 ],
+        [ 'regexp success', 'GET', 'http://foo.a.com', '3000', 'success', { a => 1 },
+            str('http://foo.a.com:3000/success?a=1'), '', '200' ],
+        [ 'regexp fail', 'POST', 'http://foo.a.com', '3000', 'fail', { a => 1 },
+            str('http://foo.a.com:3000/fail'), 'a=1', '500' ],
+        [ 'string success', 'GET', 'http://foo.b.com', '3001', 'success', { a => 1 },
+            str('http://foo.b.com:3001/success?a=1'), '', '201' ],
+        [ 'subref redirect', 'HEAD', 'http://foo.a.com',  '3002', 'blah', {},
+            str('http://foo.a.com:3002/blah'), '', '304' ],
+        [ 'literal object', 'DELETE', 'http://foo.a.com', '3003', 'blah', {},
+            str('http://foo.a.com:3003/blah'), '', '202' ],
+        [ 'response is coderef (success)', 'GET', 'http://conditional', '3004', 'success', {},
+            str('http://conditional:3004/success'), '', '200' ],
+        [ 'response is coderef (fail)', 'GET', 'http://conditional', '3004', 'fail', {},
+            str('http://conditional:3004/fail'), '', '550' ],
     )
     {
         test_send_request(@$test);
