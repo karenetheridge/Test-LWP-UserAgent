@@ -35,7 +35,7 @@ $useragent->map_response('bar.com', MyDispatcher->new);
 
 warning_is
     { $useragent->map_response('null.com', 'Foo') }
-    "map_response: response is not a coderef or an HTTP::Response, it's a non-object",
+    'map_response: response is not a coderef or an HTTP::Response, it\'s a non-object',
     'appropriate warning when creating a bad mapping',
 ;
 
@@ -76,7 +76,7 @@ warning_is
             'cannot dispatch to a bare string',
         );
     }
-    "response from coderef is not a HTTP::Response, it's a non-object",
+    'response from coderef is not a HTTP::Response, it\'s a non-object',
     'appropriate warning when attempting to dispatch inappropriately',
 ;
 

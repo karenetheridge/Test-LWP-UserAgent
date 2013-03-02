@@ -70,7 +70,7 @@ sub map_response
             $oldres->request($_[0]) };
     }
 
-    carp "map_response: response is not a coderef or an HTTP::Response, it's a ",
+    carp 'map_response: response is not a coderef or an HTTP::Response, it\'s a ',
             (blessed($response) || 'non-object')
         unless __isa_coderef($response) or $response->$_isa('HTTP::Response');
 
@@ -124,10 +124,10 @@ sub register_psgi
 
     return $self->map_response($domain, undef) if not defined $app;
 
-    carp "register_psgi: app is not a coderef, it's a ", ref($app)
+    carp 'register_psgi: app is not a coderef, it\'s a ', ref($app)
         unless __isa_coderef($app);
 
-    carp "register_psgi: did you forget to load HTTP::Message::PSGI?"
+    carp 'register_psgi: did you forget to load HTTP::Message::PSGI?'
         unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
 
     return $self->map_response(
@@ -197,8 +197,8 @@ sub send_request
 {
     my ($self, $request) = @_;
 
-    $self->progress("begin", $request);
-    my $matched_response = $self->run_handlers("request_send", $request);
+    $self->progress('begin', $request);
+    my $matched_response = $self->run_handlers('request_send', $request);
 
     my $uri = $request->uri;
 
@@ -278,18 +278,18 @@ sub send_request
 
     if (not $response->$_isa('HTTP::Response'))
     {
-        carp "response from coderef is not a HTTP::Response, it's a ",
+        carp 'response from coderef is not a HTTP::Response, it\'s a ',
             (blessed($response) || 'non-object');
         $response = LWP::UserAgent::_new_response($request, HTTP_INTERNAL_SERVER_ERROR, status_message(HTTP_INTERNAL_SERVER_ERROR));
     }
     else
     {
         $response->request($request);  # record request for reference
-        $response->header("Client-Date" => HTTP::Date::time2str(time));
+        $response->header('Client-Date' => HTTP::Date::time2str(time));
     }
 
-    $self->run_handlers("response_done", $response);
-    $self->progress("end", $response);
+    $self->run_handlers('response_done', $response);
+    $self->progress('end', $response);
 
     $self->{__last_http_response_received} = $response;
 

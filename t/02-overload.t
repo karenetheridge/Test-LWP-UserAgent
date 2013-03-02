@@ -69,7 +69,7 @@ SKIP: {
         $response,
         methods(
             code => '200',
-            content => "home sweet home",
+            content => 'home sweet home',
         ),
         'response from string overload',
     );
