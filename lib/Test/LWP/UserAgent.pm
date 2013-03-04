@@ -1,8 +1,7 @@
-package Test::LWP::UserAgent;
-# ABSTRACT: a LWP::UserAgent suitable for simulating and testing network calls
-
 use strict;
 use warnings;
+package Test::LWP::UserAgent;
+# ABSTRACT: a LWP::UserAgent suitable for simulating and testing network calls
 
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);
