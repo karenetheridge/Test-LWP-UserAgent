@@ -410,9 +410,9 @@ default to C<< LWP::UserAgent->new(%options) >>.
 
 =head1 METHODS
 
-=over
+=begin :list
 
-=item * C<new>
+* C<new>
 
 Accepts all options as in L<LWP::UserAgent>, including C<use_eval>, an
 undocumented boolean which is enabled by default. When set, sending the HTTP
@@ -424,9 +424,9 @@ this module are capable of handling normal errors.
 
 Plus, this option is added:
 
-=over
+=begin :list
 
-=item * C<< network_fallback => <boolean> >>
+* C<< network_fallback => <boolean> >>
 
 If true, requests passing through this object that do not match a
 previously-configured mapping or registration will be directed to the network.
@@ -436,23 +436,23 @@ C<map_network_response>, see below.)
 This option is also available as a read/write accessor via
 C<< $useragent->network_fallback(<value?>) >>.
 
-=back
+=end :list
 
 All other methods may be called on a specific object instance, or as a class method.
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
 
-=item * C<map_response($request_description, $http_response)>
+* C<map_response($request_description, $http_response)>
 
 With this method, you set up what L<HTTP::Response> should be returned for each
 request received.
 
 The request match specification can be described in multiple ways:
 
-=over
+=begin :list
 
-=item * string
+* string
 
 The string is matched identically against the C<host> field of the L<URI> in the request.
 
@@ -460,7 +460,7 @@ Example:
 
     $test_ua->map_response('example.com', HTTP::Response->new('500'));
 
-=item * regexp
+* regexp
 
 The regexp is matched against the URI in the request.
 
@@ -469,7 +469,7 @@ Example:
     $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
     $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
 
-=item * code
+* code
 
 An arbitrary coderef is passed a single argument, the L<HTTP::Request>, and
 returns a boolean indicating if there is a match.
@@ -481,12 +481,12 @@ returns a boolean indicating if there is a match.
         HTTP::Response->new('200'),
     );
 
-=item * L<HTTP::Request> object
+* L<HTTP::Request> object
 
 The L<HTTP::Request> object is matched identically (including all query
 parameters, headers etc) against the provided object.
 
-=back
+=end :list
 
 The response can be represented either as a literal L<HTTP::Request> object, or
 as a coderef that is run at the time of matching, with the request passed as
@@ -505,7 +505,7 @@ Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
 then examined. After no matches have been found, a 404 response is returned.
 
-=item * C<map_network_response($request_description)>
+* C<map_network_response($request_description)>
 
 Same as C<map_response> above, only requests that match this description will
 not use a response that you specify, but instead uses a real L<LWP::UserAgent>
@@ -516,7 +516,7 @@ are used for making the real network call. If called as a class method, a
 pristine L<LWP::UserAgent> object with no customized options will be used
 instead.
 
-=item * C<unmap_all(instance_only?)>
+* C<unmap_all(instance_only?)>
 
 When called as a class method, removes all mappings set up globally (across all
 objects). Mappings set up on an individual object will still remain.
@@ -526,7 +526,7 @@ this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
 
-=item * C<register_psgi($domain, $app)>
+* C<register_psgi($domain, $app)>
 
 Register a particular L<PSGI> app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
@@ -544,7 +544,7 @@ calling C<< $test_ua->register_psgi($domain, $app) >> is equivalent to:
         sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
     );
 
-=item * C<unregister_psgi($domain, instance_only?)>
+* C<unregister_psgi($domain, instance_only?)>
 
 When called as a class method, removes a domain->PSGI app entry that had been
 registered globally.  Some mappings set up on an individual object may still
@@ -560,7 +560,7 @@ then add C<undef> as a mapping on your instance:
 
     $useragent->map_response($domain, undef);
 
-=item * C<last_http_request_sent>
+* C<last_http_request_sent>
 
 The last L<HTTP::Request> object that this object (if called on an object) or
 module (if called as a class method) processed, whether or not it matched a
@@ -568,28 +568,28 @@ mapping you set up earlier.
 
 Note that this is also available via C<< last_http_response_received->request >>.
 
-=item * C<last_http_response_received>
+* C<last_http_response_received>
 
 The last L<HTTP::Response> object that this module returned, as a result of a
 mapping you set up earlier with C<map_response>. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
-=item * C<last_useragent>
+* C<last_useragent>
 
 The last Test::LWP::UserAgent object that was used to send a request.
 Obviously this only provides new information if called as a class method; you
 can use this if you don't have direct control over the useragent itself, to
 get the object that was used, to verify options such as the network timeout.
 
-=item * C<network_fallback>
+* C<network_fallback>
 
 Getter/setter method for the network_fallback preference that will be used on
 this object (if called as an instance method), or globally, if called as a
 class method.  Note that the actual behaviour used on an object is the ORed
 value of the instance setting and the global setting.
 
-=item * C<send_request($request)>
+* C<send_request($request)>
 
 This is the only method from L<LWP::UserAgent> that has been overridden, which
 processes the L<HTTP::Request>, sends to the network, then creates the
@@ -599,15 +599,15 @@ order) and returns the first match found; otherwise, a simple 404 response is
 returned (unless C<network_fallback> was specified as a constructor option,
 in which case unmatched requests will be delivered to the network.)
 
-=back
+=end :list
 
 All other methods from L<LWP::UserAgent> are available unchanged.
 
 =head1 Usage with SOAP requests
 
-=over
+=begin :list
 
-=item * L<SOAP::Lite>
+* L<SOAP::Lite>
 
 To use this module when communicating via L<SOAP::Lite> with a SOAP server (either a real one,
 with live network requests, L<see above|/network_fallback> or with one simulated
@@ -621,7 +621,7 @@ You must then make all your configuration changes and mappings globally.
 
 See also L<SOAP::Transport/CHANGING THE DEFAULT USERAGENT CLASS>.
 
-=item * L<XML::Compile::SOAP>
+* L<XML::Compile::SOAP>
 
 When using L<XML::Compile::SOAP> with a compiled WSDL, you can change the
 useragent object via L<XML::Compile::Transport::SOAPHTTP>:
@@ -636,7 +636,7 @@ useragent object via L<XML::Compile::Transport::SOAPHTTP>:
 
 See also L<XML::Compile::SOAP::FAQ/Adding HTTP headers>.
 
-=back
+=end :list
 
 =head1 MOTIVATION
 
