@@ -657,8 +657,9 @@ sent to L<LWP::UserAgent>.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent>.
-I am also usually active on irc, as 'ether' at L<irc://irc.perl.org>.
+Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent>
+(or L<bug-Test-LWP-UserAgent@rt.cpan.org>).
+I am also usually active on irc, as 'ether' at C<irc.perl.org>.
 
 =head1 ACKNOWLEDGEMENTS
 
