@@ -194,7 +194,7 @@ sub network_fallback
 
 sub send_request
 {
-    my ($self, $request) = @_;
+    my ($self, $request, $arg, $size) = @_;
 
     $self->progress('begin', $request);
     my $matched_response = $self->run_handlers('request_send', $request);
@@ -236,7 +236,7 @@ sub send_request
     if (not defined $matched_response and
         ($self->{__network_fallback} or $network_fallback))
     {
-        my $response = $self->SUPER::send_request($request);
+        my $response = $self->SUPER::send_request($request, $arg, $size);
         $self->{__last_http_response_received} = $response;
         return $response;
     }
