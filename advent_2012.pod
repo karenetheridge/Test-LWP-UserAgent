@@ -2,6 +2,9 @@
 
 =head1 Perl Advent Calendar 2012
 
+This article was originally published on the
+L<Perl Advent Calendar 2012|http://www.perladvent.org/2012/2012-12-12.html>.
+
 =head1 Testing networking client code using Test::LWP::UserAgent
 
 L<Test::LWP::UserAgent> is a module I wrote after writing several networking
