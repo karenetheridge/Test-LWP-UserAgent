@@ -46,6 +46,7 @@ use Class::Load 'try_load_class';
 
 
 {
+    # mapped response is a thingy that quacks like a coderef
     my $useragent = Test::LWP::UserAgent->new;
     $useragent->map_response(bless({}, 'MyRequest'), bless({}, 'MyResponse'));
 
@@ -59,6 +60,7 @@ SKIP: {
     try_load_class('HTTP::Message::PSGI')
         or skip('HTTP::Message::PSGI is required for the remainder of these tests', 3);
 
+    # mapped response is a coderef that turns a PSGI $env into an HTTP response
     my $useragent = Test::LWP::UserAgent->new;
     $useragent->register_psgi(MyHost->new('localhost'),
         sub { [ '200', [], ['home sweet home'] ] });
