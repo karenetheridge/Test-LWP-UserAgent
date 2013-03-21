@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - fixed handling of methods such as mirror() (RT#84094) - thanks for
+            the report, Tom Hukins!
 
 0.015     2013-02-09 16:55:18 PST-0800 (Karen Etheridge)
           - can now create a mapping on a class name or an object where that

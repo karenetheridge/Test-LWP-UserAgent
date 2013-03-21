@@ -194,7 +194,7 @@ sub network_fallback
 
 sub send_request
 {
-    my ($self, $request) = @_;
+    my ($self, $request, $arg, $size) = @_;
 
     $self->progress('begin', $request);
     my $matched_response = $self->run_handlers('request_send', $request);
@@ -236,7 +236,7 @@ sub send_request
     if (not defined $matched_response and
         ($self->{__network_fallback} or $network_fallback))
     {
-        my $response = $self->SUPER::send_request($request);
+        my $response = $self->SUPER::send_request($request, $arg, $size);
         $self->{__last_http_response_received} = $response;
         return $response;
     }
@@ -286,6 +286,19 @@ sub send_request
         $response->request($request);  # record request for reference
         $response->header('Client-Date' => HTTP::Date::time2str(time));
     }
+
+    # handle any additional arguments that were provided, such as saving the
+    # content to a file.  this also runs additional handlers for us.
+    my $protocol = LWP::Protocol->new('no-schemes-from-TLWPUA', $self);
+    my $complete;
+    $response = $protocol->collect($arg, $response, sub {
+        # remove content from $response and stream it back
+        return if $complete;
+        my $content = $response->content;
+        $response->content('');
+        $complete++;
+        \$content;
+    });
 
     $self->run_handlers('response_done', $response);
     $self->progress('end', $response);
