@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.015
+version 0.016
 
 # SYNOPSIS
 
@@ -17,7 +17,7 @@ In your application code:
     my $ua = $self->useragent || LWP::UserAgent->new;
 
     my $uri = URI->new('http://example.com');
-    $uri->port(3000);
+    $uri->port('3000');
     $uri->path('success');
     my $request = POST($uri, a => 1);
     my $response = $ua->request($request);
@@ -28,16 +28,16 @@ Then, in your tests:
     use Test::More;
 
     Test::LWP::UserAgent->map_response(
-        qr{example.com/success}, HTTP::Response->new(200, 'OK', ['Content-Type' => 'text/plain'], ''));
+        qr{example.com/success}, HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
-        qr{example.com/fail}, HTTP::Response->new(500, 'ERROR', ['Content-Type' => 'text/plain'], ''));
+        qr{example.com/fail}, HTTP::Response->new('500', 'ERROR', ['Content-Type' => 'text/plain'], ''));
     Test::LWP::UserAgent->map_response(
         qr{example.com/conditional},
         sub {
             my $request = shift;
             my $success = $request->uri =~ /success/;
             return HTTP::Response->new(
-                ($success ? ( 200, 'OK') : (500, 'ERROR'),
+                ($success ? ( '200', 'OK') : ('500', 'ERROR'),
                 ['Content-Type' => 'text/plain'], '')
             )
         },
@@ -49,7 +49,7 @@ OR, you can use a [PSGI](http://search.cpan.org/perldoc?PSGI) app to handle the 
     Test::LWP::UserAgent->register_psgi('example.com' => sub {
         my $env = shift;
         # logic here...
-        [ 200, [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
+        [ '200', [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
     );
 
 And then:
@@ -90,7 +90,7 @@ or:
     );
     is(
         $useragent->last_http_response_received->code,
-        200,
+        '200',
         'I should have gotten an OK response',
     );
 
@@ -144,7 +144,7 @@ default to `LWP::UserAgent->new(%options)`.
 
         Example:
 
-            $test_ua->map_response('example.com', HTTP::Response->new(500));
+            $test_ua->map_response('example.com', HTTP::Response->new('500'));
 
     - regexp
 
@@ -152,8 +152,8 @@ default to `LWP::UserAgent->new(%options)`.
 
         Example:
 
-            $test_ua->map_response(qr{foo/bar}, HTTP::Response->new(200));
-            $test_ua->map_response(qr{baz/quux}, HTTP::Response->new(500));
+            $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
+            $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
 
     - code
 
@@ -164,7 +164,7 @@ default to `LWP::UserAgent->new(%options)`.
                     my $request = shift;
                     return 1 if $request->method eq 'GET' || $request->method eq 'POST';
                 },
-                HTTP::Response->new(200),
+                HTTP::Response->new('200'),
             );
 
     - [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object
@@ -335,8 +335,9 @@ sent to [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent).
 
 # SUPPORT
 
-Bugs may be submitted through [https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent](https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent).
-I am also usually active on irc, as 'ether' at [irc://irc.perl.org](irc://irc.perl.org).
+Bugs may be submitted through [the RT bug tracker](https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent)
+(or [bug-Test-LWP-UserAgent@rt.cpan.org](http://search.cpan.org/perldoc?bug-Test-LWP-UserAgent@rt.cpan.org)).
+I am also usually active on irc, as 'ether' at `irc.perl.org`.
 
 # ACKNOWLEDGEMENTS
 
