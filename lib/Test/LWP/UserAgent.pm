@@ -209,6 +209,7 @@ sub send_request
 
         if ($request_desc->$_isa('HTTP::Request'))
         {
+            local $Storable::canonical = 1;
             $matched_response = $response, last
                 if freeze($request) eq freeze($request_desc);
         }
