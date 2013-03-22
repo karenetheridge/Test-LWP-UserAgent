@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.017
+version 0.018
 
 # SYNOPSIS
 

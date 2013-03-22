@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.018     2013-03-22 11:08:50 PDT-0700 (Karen Etheridge)
           - fix test failures under newer perls by ensuring that serialized
             comparisons are always performed canonically
 
