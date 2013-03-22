@@ -1,8 +1,9 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 2;
+use Test::More tests => 7;
 use Test::NoWarnings 1.04 ':early';
+use Test::Deep;
 use Test::TempDir;
 use Path::Tiny;
 use Test::LWP::UserAgent;
@@ -36,5 +37,45 @@ use Test::LWP::UserAgent;
 
     my $contents = path($tmpfile)->slurp;
     is($contents, 'all good!', 'response body is saved to file (internal responses)');
+    is($response->content, '', 'response body is removed');
+    cmp_deeply(
+        $response,
+        methods(
+            [ header => 'X-Died' ] => undef,
+            [ header => 'Content-Type' ], => 'text/plain',
+            [ header => 'Client-Date' ] => ignore,
+        ),
+        'response headers look ok',
+    );
+}
+
+{
+    # and another, using mirror() directly
+
+    my $useragent = Test::LWP::UserAgent->new;
+    $useragent->map_response(
+        qr/foo.com/,
+        HTTP::Response->new(
+            200, 'OK',
+            ['Content-Type' => 'text/plain'], 'all good!',
+        ),
+    );
+
+    my (undef, $tmpfile) = tempfile;
+
+    my $response = $useragent->mirror('http://foo.com', $tmpfile);
+
+    my $contents = path($tmpfile)->slurp;
+    is($contents, 'all good!', 'response body is saved to file (internal responses)');
+    is($response->content, '', 'response body is removed');
+    cmp_deeply(
+        $response,
+        methods(
+            [ header => 'X-Died' ] => undef,
+            [ header => 'Content-Type' ], => 'text/plain',
+            [ header => 'Client-Date' ] => ignore,
+        ),
+        'response headers look ok',
+    );
 }
 

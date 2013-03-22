@@ -293,7 +293,7 @@ sub send_request
     my $complete;
     $response = $protocol->collect($arg, $response, sub {
         # remove content from $response and stream it back
-        return if $complete;
+        return \'' if $complete;
         my $content = $response->content;
         $response->content('');
         $complete++;
