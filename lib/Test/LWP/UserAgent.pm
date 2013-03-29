@@ -657,7 +657,8 @@ See also L<XML::Compile::SOAP::FAQ/Adding HTTP headers>.
 Most mock libraries on the CPAN use L<Test::MockObject>, which is widely considered
 not good practice (among other things, C<@ISA> is violated, it requires
 knowing far too much about the module's internals, and is very clumsy to work
-with).
+with).  (L<This blog entry|hashbang.ca/2011/09/23/mocking-lwpuseragent>
+is one of many that chronicles its issues.)
 
 This module is a direct descendant of L<LWP::UserAgent>, exports nothing into
 your namespace, and all access is via method calls, so it is fully inheritable
