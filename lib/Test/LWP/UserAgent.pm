@@ -383,7 +383,8 @@ And then:
     # <now test that your code responded to the 200 response properly...>
 
 This feature is useful for testing your PSGI applications (you may or may not find
-using L<Plack::Test> easier), or for simulating a server so as to test your
+using L<Plack::Test> or L<Plack::Test::ExternalServer>
+easier), or for simulating a server so as to test your
 client code.
 
 OR, you can route some or all requests through the network as normal, but
@@ -452,12 +453,12 @@ C<< $useragent->network_fallback(<value?>) >>.
 
 =back
 
-All other methods may be called on a specific object instance, or as a class method.
+All other methods below may be called on a specific object instance, or as a class method.
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
 
-=item * C<map_response($request_description, $http_response)>
+=item * C<map_response($request_specification, $http_response)>
 
 With this method, you set up what L<HTTP::Response> should be returned for each
 request received.
@@ -470,24 +471,21 @@ The request match specification can be described in multiple ways:
 
 The string is matched identically against the C<host> field of the L<URI> in the request.
 
-Example:
-
     $test_ua->map_response('example.com', HTTP::Response->new('500'));
 
 =item * regexp
 
 The regexp is matched against the URI in the request.
 
-Example:
-
     $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
     $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
 
 =item * code
 
-An arbitrary coderef is passed a single argument, the L<HTTP::Request>, and
+The provided coderef is passed a single argument, the L<HTTP::Request>, and
 returns a boolean indicating if there is a match.
 
+    # matches all GET and POST requests
     $test_ua->map_response(sub {
             my $request = shift;
             return 1 if $request->method eq 'GET' || $request->method eq 'POST';
@@ -517,7 +515,7 @@ or
 
 Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
-then examined. After no matches have been found, a 404 response is returned.
+then examined. When no matches have been found, a 404 response is returned.
 
 =item * C<map_network_response($request_description)>
 
@@ -688,7 +686,7 @@ module, and from where I borrowed some aspects of the API.
 
 =head1 SEE ALSO
 
-L<entry for Perl Advent 2012|http://www.perladvent.org/2012/2012-12-12.html>
+L<article for Perl Advent 2012|http://www.perladvent.org/2012/2012-12-12.html>
 
 L<Test::Mock::LWP::Dispatch>
 
