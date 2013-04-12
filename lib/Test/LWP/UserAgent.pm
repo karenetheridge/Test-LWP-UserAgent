@@ -696,6 +696,7 @@ L<Test::Mock::LWP::UserAgent>
 
 L<LWP::UserAgent>
 
-L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>
+L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>,
+L<Plack::Test>, L<Plack::Test::ExternalServer>
 
 =cut
