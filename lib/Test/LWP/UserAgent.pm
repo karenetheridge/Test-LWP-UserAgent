@@ -326,6 +326,8 @@ __END__
 
 =pod
 
+=for stopwords ORed
+
 =head1 SYNOPSIS
 
 In your application code:
