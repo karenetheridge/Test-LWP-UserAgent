@@ -326,8 +326,6 @@ __END__
 
 =pod
 
-=for stopwords ORed
-
 =head1 SYNOPSIS
 
 In your application code:
@@ -591,12 +589,16 @@ how your code reacted to receiving this response.
 
 =item * C<last_useragent>
 
+=for stopwords useragent
+
 The last Test::LWP::UserAgent object that was used to send a request.
 Obviously this only provides new information if called as a class method; you
 can use this if you don't have direct control over the useragent itself, to
 get the object that was used, to verify options such as the network timeout.
 
 =item * C<network_fallback>
+
+=for stopwords ORed
 
 Getter/setter method for the network_fallback preference that will be used on
 this object (if called as an instance method), or globally, if called as a
@@ -637,6 +639,8 @@ See also L<SOAP::Transport/CHANGING THE DEFAULT USERAGENT CLASS>.
 
 =item * L<XML::Compile::SOAP>
 
+=for stopwords WSDL
+
 When using L<XML::Compile::SOAP> with a compiled WSDL, you can change the
 useragent object via L<XML::Compile::Transport::SOAPHTTP>:
 
@@ -672,11 +676,15 @@ sent to L<LWP::UserAgent>.
 
 =head1 SUPPORT
 
+=for stopwords irc
+
 Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent>
 (or L<bug-Test-LWP-UserAgent@rt.cpan.org>).
 I am also usually active on irc, as 'ether' at C<irc.perl.org>.
 
 =head1 ACKNOWLEDGEMENTS
+
+=for stopwords AirG Yury Zavarin
 
 L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
 
