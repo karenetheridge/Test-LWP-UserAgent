@@ -318,7 +318,7 @@ sub __isa_coderef
 
 sub __is_regexp
 {
-    $^V < 5.009005 ? ref(shift) eq 'Regexp' : re::is_regexp(shift);
+    re->can('is_regexp') ? re::is_regexp(shift) : ref(shift) eq 'Regexp';
 }
 
 1;
