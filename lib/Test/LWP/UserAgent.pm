@@ -334,13 +334,13 @@ In your application code:
     use HTTP::Request::Common;
     use LWP::UserAgent;
 
-    my $ua = $self->useragent || LWP::UserAgent->new;
+    my $useragent = $self->useragent || LWP::UserAgent->new;
 
     my $uri = URI->new('http://example.com');
     $uri->port('3000');
     $uri->path('success');
     my $request = POST($uri, a => 1);
-    my $response = $ua->request($request);
+    my $response = $useragent->request($request);
 
 Then, in your tests:
 
