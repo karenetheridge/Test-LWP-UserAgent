@@ -347,11 +347,12 @@ Then, in your tests:
     use Test::LWP::UserAgent;
     use Test::More;
 
-    Test::LWP::UserAgent->map_response(
+    my $useragent = Test::LWP::UserAgent->new;
+    $useragent->map_response(
         qr{example.com/success}, HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/plain'], ''));
-    Test::LWP::UserAgent->map_response(
+    $useragent->map_response(
         qr{example.com/fail}, HTTP::Response->new('500', 'ERROR', ['Content-Type' => 'text/plain'], ''));
-    Test::LWP::UserAgent->map_response(
+    $useragent->map_response(
         qr{example.com/conditional},
         sub {
             my $request = shift;
@@ -366,7 +367,7 @@ Then, in your tests:
 OR, you can use a L<PSGI> app to handle the requests:
 
     use HTTP::Message::PSGI;
-    Test::LWP::UserAgent->register_psgi('example.com' => sub {
+    $useragent->register_psgi('example.com' => sub {
         my $env = shift;
         # logic here...
         [ '200', [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
@@ -376,7 +377,7 @@ And then:
 
     # <something which calls the code being tested...>
 
-    my $last_request = Test::LWP::UserAgent->last_http_request_sent;
+    my $last_request = $useragent->last_http_request_sent;
     is($last_request->uri, 'http://example.com/success:3000', 'URI');
     is($last_request->content, 'a=1', 'POST content');
 
@@ -423,6 +424,10 @@ One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
 default to C<< LWP::UserAgent->new(%options) >>.
 
+Additionally, most methods can be called as class methods, which will store
+the settings globally, so that any instance of L<Test::LWP::UserAgent> can use
+them, which can simplify some of your application code.
+
 =head1 METHODS
 
 =over
@@ -453,7 +458,7 @@ C<< $useragent->network_fallback(<value?>) >>.
 
 =back
 
-All other methods below may be called on a specific object instance, or as a class method.
+B<All other methods below may be called on a specific object instance, or as a class method.>
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.

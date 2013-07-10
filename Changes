@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - switched examples to using object-based syntax, to make it more
+            clear that there is no monkey-patching (RT#86830)
 
 0.018     2013-03-22 11:08:50 PDT-0700 (Karen Etheridge)
           - fix test failures under newer perls by ensuring that serialized
