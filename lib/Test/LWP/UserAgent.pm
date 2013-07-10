@@ -696,15 +696,15 @@ module, and from where I borrowed some aspects of the API.
 
 =head1 SEE ALSO
 
-L<article for Perl Advent 2012|http://www.perladvent.org/2012/2012-12-12.html>
+=begin :list
 
-L<Test::Mock::LWP::Dispatch>
+* L<Perl advent article, 2012|http://www.perladvent.org/2012/2012-12-12.html>
+* L<Test::Mock::LWP::Dispatch>
+* L<Test::Mock::LWP::UserAgent>
+* L<LWP::UserAgent>
+* L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>,
+* L<Plack::Test>, L<Plack::Test::ExternalServer>
 
-L<Test::Mock::LWP::UserAgent>
-
-L<LWP::UserAgent>
-
-L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>,
-L<Plack::Test>, L<Plack::Test::ExternalServer>
+=end :list
 
 =cut
