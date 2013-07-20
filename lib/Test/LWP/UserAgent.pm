@@ -352,41 +352,31 @@ Then, in your tests:
         qr{example.com/success}, HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/plain'], ''));
     $useragent->map_response(
         qr{example.com/fail}, HTTP::Response->new('500', 'ERROR', ['Content-Type' => 'text/plain'], ''));
-    $useragent->map_response(
-        qr{example.com/conditional},
-        sub {
-            my $request = shift;
-            my $success = $request->uri =~ /success/;
-            return HTTP::Response->new(
-                ($success ? ( '200', 'OK') : ('500', 'ERROR'),
-                ['Content-Type' => 'text/plain'], '')
-            )
-        },
-    );
 
-OR, you can use a L<PSGI> app to handle the requests:
+    # now, do something that sends a request, and test how your application
+    # responds to that response
 
-    use HTTP::Message::PSGI;
-    $useragent->register_psgi('example.com' => sub {
-        my $env = shift;
-        # logic here...
-        [ '200', [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
-    );
+=head1 DESCRIPTION
 
-And then:
+This module is a subclass of L<LWP::UserAgent> which overrides a few key
+low-level methods that are concerned with actually sending your request over
+the network, allowing an interception of that request and simulating a
+particular response.  This greatly facilitates testing of client networking
+code where the server follows a known protocol.
 
-    # <something which calls the code being tested...>
+The synopsis describes a classic case where you want to test how your
+application reacts to various responses from the server.  This module will let
+you send back various responses depending on the request, without having to
+set up a real server to test against.  This can be invaluable when you need to
+test edge cases or error conditions that do not normally arise from the
+server.
 
-    my $last_request = $useragent->last_http_request_sent;
-    is($last_request->uri, 'http://example.com/success:3000', 'URI');
-    is($last_request->content, 'a=1', 'POST content');
+There are a lot of different ways you can set up the response mappings, and
+hook into this module; see the documentation for the individual interface
+methods.
 
-    # <now test that your code responded to the 200 response properly...>
-
-This feature is useful for testing your PSGI applications (you may or may not find
-using L<Plack::Test> or L<Plack::Test::ExternalServer>
-easier), or for simulating a server so as to test your
-client code.
+You can use a L<PSGI> app to handle the requests - see F<examples/call_psgi.t>
+in this dist, and also L</register_psgi> below.
 
 OR, you can route some or all requests through the network as normal, but
 still gain the hooks provided by this class to test what was sent and
@@ -415,6 +405,8 @@ or:
         '200',
         'I should have gotten an OK response',
     );
+
+=head2 Ensuring the right useragent is used
 
 Note that L<LWP::UserAgent> itself is not monkey-patched - you must use
 this module (or a subclass) to send your request, or it cannot be caught and
@@ -560,6 +552,12 @@ calling C<< $test_ua->register_psgi($domain, $app) >> is equivalent to:
         $domain,
         sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
     );
+
+This feature is useful for testing your PSGI applications, or for simulating
+a server so as to test your client code.
+
+You might find using L<Plack::Test> or L<Plack::Test::ExternalServer> easier
+for your needs, so check those out as well.
 
 =item * C<unregister_psgi($domain, instance_only?)>
 
