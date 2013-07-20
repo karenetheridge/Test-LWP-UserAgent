@@ -689,7 +689,7 @@ I am also usually active on irc, as 'ether' at C<irc.perl.org>.
 
 =for stopwords AirG Yury Zavarin
 
-L<AirG Inc.|http://corp.airg.com>, my employer, and the first user of this distribution.
+L<AirG Inc.|http://corp.airg.com>, my former employer, and the first user of this distribution.
 
 mst - Matt S. Trout <mst@shadowcat.co.uk>, for the better name of this
 distribution, and for the PSGI registration concept.
