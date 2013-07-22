@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.018
+version 0.019
 
 # SYNOPSIS
 
@@ -14,57 +14,49 @@ In your application code:
     use HTTP::Request::Common;
     use LWP::UserAgent;
 
-    my $ua = $self->useragent || LWP::UserAgent->new;
+    my $useragent = $self->useragent || LWP::UserAgent->new;
 
     my $uri = URI->new('http://example.com');
     $uri->port('3000');
     $uri->path('success');
     my $request = POST($uri, a => 1);
-    my $response = $ua->request($request);
+    my $response = $useragent->request($request);
 
 Then, in your tests:
 
     use Test::LWP::UserAgent;
     use Test::More;
 
-    Test::LWP::UserAgent->map_response(
+    my $useragent = Test::LWP::UserAgent->new;
+    $useragent->map_response(
         qr{example.com/success}, HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/plain'], ''));
-    Test::LWP::UserAgent->map_response(
+    $useragent->map_response(
         qr{example.com/fail}, HTTP::Response->new('500', 'ERROR', ['Content-Type' => 'text/plain'], ''));
-    Test::LWP::UserAgent->map_response(
-        qr{example.com/conditional},
-        sub {
-            my $request = shift;
-            my $success = $request->uri =~ /success/;
-            return HTTP::Response->new(
-                ($success ? ( '200', 'OK') : ('500', 'ERROR'),
-                ['Content-Type' => 'text/plain'], '')
-            )
-        },
-    );
 
-OR, you can use a [PSGI](http://search.cpan.org/perldoc?PSGI) app to handle the requests:
+    # now, do something that sends a request, and test how your application
+    # responds to that response
 
-    use HTTP::Message::PSGI;
-    Test::LWP::UserAgent->register_psgi('example.com' => sub {
-        my $env = shift;
-        # logic here...
-        [ '200', [ 'Content-Type' => 'text/plain' ], [ 'some body' ] ],
-    );
+# DESCRIPTION
 
-And then:
+This module is a subclass of [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) which overrides a few key
+low-level methods that are concerned with actually sending your request over
+the network, allowing an interception of that request and simulating a
+particular response.  This greatly facilitates testing of client networking
+code where the server follows a known protocol.
 
-    # <something which calls the code being tested...>
+The synopsis describes a classic case where you want to test how your
+application reacts to various responses from the server.  This module will let
+you send back various responses depending on the request, without having to
+set up a real server to test against.  This can be invaluable when you need to
+test edge cases or error conditions that do not normally arise from the
+server.
 
-    my $last_request = Test::LWP::UserAgent->last_http_request_sent;
-    is($last_request->uri, 'http://example.com/success:3000', 'URI');
-    is($last_request->content, 'a=1', 'POST content');
+There are a lot of different ways you can set up the response mappings, and
+hook into this module; see the documentation for the individual interface
+methods.
 
-    # <now test that your code responded to the 200 response properly...>
-
-This feature is useful for testing your PSGI applications (you may or may not find
-using [Plack::Test](http://search.cpan.org/perldoc?Plack::Test) easier), or for simulating a server so as to test your
-client code.
+You can use a [PSGI](http://search.cpan.org/perldoc?PSGI) app to handle the requests - see `examples/call\_psgi.t`
+in this dist, and also ["register\_psgi"](#register\_psgi) below.
 
 OR, you can route some or all requests through the network as normal, but
 still gain the hooks provided by this class to test what was sent and
@@ -94,6 +86,8 @@ or:
         'I should have gotten an OK response',
     );
 
+## Ensuring the right useragent is used
+
 Note that [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) itself is not monkey-patched - you must use
 this module (or a subclass) to send your request, or it cannot be caught and
 processed.
@@ -101,6 +95,10 @@ processed.
 One common mechanism to swap out the useragent implementation is via a
 lazily-built Moose attribute; if no override is provided at construction time,
 default to `LWP::UserAgent->new(%options)`.
+
+Additionally, most methods can be called as class methods, which will store
+the settings globally, so that any instance of [Test::LWP::UserAgent](http://search.cpan.org/perldoc?Test::LWP::UserAgent) can use
+them, which can simplify some of your application code.
 
 # METHODS
 
@@ -126,12 +124,12 @@ default to `LWP::UserAgent->new(%options)`.
         This option is also available as a read/write accessor via
         `$useragent->network_fallback(<value?>)`.
 
-    All other methods may be called on a specific object instance, or as a class method.
+    __All other methods below may be called on a specific object instance, or as a class method.__
     If called as on a blessed object, the action performed or data returned is
     limited to just that object; if called as a class method, the action or data is
     global.
 
-- `map_response($request_description, $http_response)`
+- `map_response($request_specification, $http_response)`
 
     With this method, you set up what [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) should be returned for each
     request received.
@@ -142,24 +140,21 @@ default to `LWP::UserAgent->new(%options)`.
 
         The string is matched identically against the `host` field of the [URI](http://search.cpan.org/perldoc?URI) in the request.
 
-        Example:
-
             $test_ua->map_response('example.com', HTTP::Response->new('500'));
 
     - regexp
 
         The regexp is matched against the URI in the request.
 
-        Example:
-
             $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
             $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
 
     - code
 
-        An arbitrary coderef is passed a single argument, the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), and
+        The provided coderef is passed a single argument, the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), and
         returns a boolean indicating if there is a match.
 
+            # matches all GET and POST requests
             $test_ua->map_response(sub {
                     my $request = shift;
                     return 1 if $request->method eq 'GET' || $request->method eq 'POST';
@@ -187,7 +182,7 @@ default to `LWP::UserAgent->new(%options)`.
 
     Instance mappings take priority over global (class method) mappings - if no
     matches are found from mappings added to the instance, the global mappings are
-    then examined. After no matches have been found, a 404 response is returned.
+    then examined. When no matches have been found, a 404 response is returned.
 
 - `map_network_response($request_description)`
 
@@ -227,6 +222,12 @@ default to `LWP::UserAgent->new(%options)`.
             $domain,
             sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
         );
+
+    This feature is useful for testing your PSGI applications, or for simulating
+    a server so as to test your client code.
+
+    You might find using [Plack::Test](http://search.cpan.org/perldoc?Plack::Test) or [Plack::Test::ExternalServer](http://search.cpan.org/perldoc?Plack::Test::ExternalServer) easier
+    for your needs, so check those out as well.
 
 - `unregister_psgi($domain, instance_only?)`
 
@@ -321,7 +322,8 @@ All other methods from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::User
 Most mock libraries on the CPAN use [Test::MockObject](http://search.cpan.org/perldoc?Test::MockObject), which is widely considered
 not good practice (among other things, `@ISA` is violated, it requires
 knowing far too much about the module's internals, and is very clumsy to work
-with).
+with).  ([This blog entry](http://search.cpan.org/perldoc?hashbang.ca#2011/09/23/mocking-lwpuseragent)
+is one of many that chronicles its issues.)
 
 This module is a direct descendant of [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent), exports nothing into
 your namespace, and all access is via method calls, so it is fully inheritable
@@ -341,7 +343,7 @@ I am also usually active on irc, as 'ether' at `irc.perl.org`.
 
 # ACKNOWLEDGEMENTS
 
-[AirG Inc.](http://corp.airg.com), my employer, and the first user of this distribution.
+[AirG Inc.](http://corp.airg.com), my former employer, and the first user of this distribution.
 
 mst - Matt S. Trout <mst@shadowcat.co.uk>, for the better name of this
 distribution, and for the PSGI registration concept.
@@ -351,15 +353,12 @@ module, and from where I borrowed some aspects of the API.
 
 # SEE ALSO
 
-[entry for Perl Advent 2012](http://www.perladvent.org/2012/2012-12-12.html)
-
-[Test::Mock::LWP::Dispatch](http://search.cpan.org/perldoc?Test::Mock::LWP::Dispatch)
-
-[Test::Mock::LWP::UserAgent](http://search.cpan.org/perldoc?Test::Mock::LWP::UserAgent)
-
-[LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent)
-
-[PSGI](http://search.cpan.org/perldoc?PSGI), [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI), [LWP::Protocol::PSGI](http://search.cpan.org/perldoc?LWP::Protocol::PSGI)
+- [Perl advent article, 2012](http://www.perladvent.org/2012/2012-12-12.html)
+- [Test::Mock::LWP::Dispatch](http://search.cpan.org/perldoc?Test::Mock::LWP::Dispatch)
+- [Test::Mock::LWP::UserAgent](http://search.cpan.org/perldoc?Test::Mock::LWP::UserAgent)
+- [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent)
+- [PSGI](http://search.cpan.org/perldoc?PSGI), [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI), [LWP::Protocol::PSGI](http://search.cpan.org/perldoc?LWP::Protocol::PSGI),
+- [Plack::Test](http://search.cpan.org/perldoc?Plack::Test), [Plack::Test::ExternalServer](http://search.cpan.org/perldoc?Plack::Test::ExternalServer)
 
 # AUTHOR
 

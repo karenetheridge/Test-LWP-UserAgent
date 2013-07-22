@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.019     2013-07-21 22:21:27 PDT-0700 (Karen Etheridge)
           - switched examples to using object-based syntax, to make it more
             clear that there is no monkey-patching (RT#86830), and other
             documentation/example cleanup
