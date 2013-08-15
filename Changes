@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - fixed tests from using example.com to iana.org, to ensure we get a
+            302 response when needed
 
 0.019     2013-07-21 22:21:27 PDT-0700 (Karen Etheridge)
           - switched examples to using object-based syntax, to make it more
