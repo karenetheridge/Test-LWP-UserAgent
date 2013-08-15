@@ -9,7 +9,7 @@ BEGIN {
 }
 
 use Test::More tests => 30;
-use Test::NoWarnings 1.04 ':early';
+use Test::Warnings;
 
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;

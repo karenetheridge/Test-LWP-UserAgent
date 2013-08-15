@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Test::Requires 'HTTP::Message::PSGI';
 use Test::More tests => 71;
-use Test::NoWarnings 1.04 ':early';
+use Test::Warnings;
 use Test::Deep;
 
 use Test::LWP::UserAgent;

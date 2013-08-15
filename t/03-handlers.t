@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::More tests => 12;
-use Test::NoWarnings 1.04 ':early';
+use Test::Warnings;
 use Test::Deep;
 use Test::LWP::UserAgent;
 

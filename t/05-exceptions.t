@@ -2,10 +2,9 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::More tests => 21;
-use Test::NoWarnings 1.04 ':early';
+use Test::Warnings 0.005 ':all';
 use Test::Deep;
 use Test::Fatal;
-use Test::Warn;
 use Scalar::Util 'refaddr';
 
 use Test::LWP::UserAgent;
@@ -82,8 +81,8 @@ sub test_send_request
     is(
         $expected_warning
             ? exception {
-                warning_like { $response = $useragent->request($request) }
-                    $expected_warning, 'expected warning'
+                like(warning { $response = $useragent->request($request) },
+                    $expected_warning, 'expected warning')
                 }
             : exception { $response = $useragent->request($request) },
         undef,

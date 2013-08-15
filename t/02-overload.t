@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Test::More tests => 8;
 use Test::Deep;
-use Test::NoWarnings 1.04 ':early';
+use Test::Warnings;
 
 use Test::LWP::UserAgent;
 use Class::Load 'try_load_class';

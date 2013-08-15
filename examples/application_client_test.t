@@ -10,8 +10,8 @@ use warnings;
 # interacts with the network. Therefore, we need to make the network behave in
 # different ways so we can test how we interact with it.
 
-use Test::More tests => 4;
-use Test::Warn;
+use Test::More tests => 5;
+use Test::Warnings 0.005 ':all';
 use Test::LWP::UserAgent;
 
 use lib 'examples';
@@ -38,9 +38,11 @@ $useragent->map_response(
 my $client = MyApp::Client->new(useragent => $useragent);
 
 my @ids;
-warning_like { @ids = $client->get_indexes(user => 'timeout') }
+like(
+    warning { @ids = $client->get_indexes(user => 'timeout') },
     qr{network timeout when fetching http://.*user/timeout},
-    'warning issued on network timeout';
+    'warning issued on network timeout',
+);
 is_deeply(\@ids, [], 'no ids returned on network timeout');
 
 @ids = $client->get_indexes(user => 'fred');

@@ -9,7 +9,7 @@ BEGIN {
 }
 
 use Test::More tests => 4;
-use Test::NoWarnings 1.04 ':early';
+use Test::Warnings;
 use Test::Deep;
 use Test::TempDir;
 use Path::Tiny;
