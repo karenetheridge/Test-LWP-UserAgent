@@ -1,8 +1,8 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 7;
-use Test::Warnings;
+use Test::More;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use Test::LWP::UserAgent;
 
@@ -25,3 +25,4 @@ ok(!Test::LWP::UserAgent::__isa_coderef($nota_coderef), 'blessed hash is not cal
 ok(Test::LWP::UserAgent::__isa_coderef($isa_coderef), 'blessed coderef is callable as a coderef');
 ok(Test::LWP::UserAgent::__isa_coderef(CodeRefOverload->new), 'object with code overload is callable as a coderef');
 
+done_testing;

@@ -8,8 +8,8 @@ BEGIN {
     }
 }
 
-use Test::More tests => 30;
-use Test::Warnings;
+use Test::More;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;
@@ -106,3 +106,4 @@ sub test_send_request
     is($useragent->request($request)->code, $expected_code, $name);
 }
 
+done_testing;

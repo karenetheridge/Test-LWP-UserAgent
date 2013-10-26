@@ -1,8 +1,8 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 6;
-use Test::Warnings 0.005 ':all';
+use Test::More;
+use Test::Warnings 0.005 ':no_end_test', ':all';
 use Test::Deep 0.110;
 
 use HTTP::Request::Common;
@@ -79,3 +79,5 @@ like(
     'appropriate warning when attempting to dispatch inappropriately',
 );
 
+had_no_warnings if $ENV{AUTHOR_TESTING};
+done_testing;

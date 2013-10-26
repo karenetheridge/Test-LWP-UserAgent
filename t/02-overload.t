@@ -1,9 +1,9 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 8;
+use Test::More;
 use Test::Deep;
-use Test::Warnings;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use Test::LWP::UserAgent;
 use Class::Load 'try_load_class';
@@ -81,3 +81,4 @@ SKIP: {
     is($response->code, '404', 'mapping removed via str overload comparison');
 }
 
+done_testing;

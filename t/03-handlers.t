@@ -1,8 +1,8 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 12;
-use Test::Warnings;
+use Test::More;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
 use Test::LWP::UserAgent;
 
@@ -52,3 +52,4 @@ my @response_phases = qw(response_done response_redirect);
     );
 }
 
+done_testing;

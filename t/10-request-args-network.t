@@ -8,8 +8,8 @@ BEGIN {
     }
 }
 
-use Test::More tests => 4;
-use Test::Warnings;
+use Test::More;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
 use Test::TempDir;
 use Path::Tiny;
@@ -45,3 +45,4 @@ my $expected_content = $response->decoded_content;
     );
 }
 
+done_testing;

@@ -1,8 +1,8 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 5;
-use Test::Warnings;
+use Test::More;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use Test::LWP::UserAgent;
 
@@ -69,3 +69,4 @@ use Test::LWP::UserAgent;
     is($response->code, '404', 'previous mapping is masked');
 }
 
+done_testing;

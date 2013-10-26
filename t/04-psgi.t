@@ -2,8 +2,8 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::Requires 'HTTP::Message::PSGI';
-use Test::More tests => 71;
-use Test::Warnings;
+use Test::More;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
 
 use Test::LWP::UserAgent;
@@ -155,3 +155,4 @@ sub test_send_request
     );
 }
 
+done_testing;
