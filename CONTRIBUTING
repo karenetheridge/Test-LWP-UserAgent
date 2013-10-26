@@ -74,5 +74,5 @@ or via bug-Test-LWP-UserAgent@rt.cpan.org.
 This is also a good place to send your questions about the usage of this distribution.
 
 
-This file was generated via Dist::Zilla::Plugin::GenerateFile::ShareDir 0.001 from a
-template file originating in Dist-Zilla-PluginBundle-Author-ETHER-0.032.
+This file was generated via Dist::Zilla::Plugin::GenerateFile::ShareDir 0.002 from a
+template file originating in Dist-Zilla-PluginBundle-Author-ETHER-0.033.

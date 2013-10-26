@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.019
+version 0.020
 
 # SYNOPSIS
 
@@ -366,7 +366,7 @@ Karen Etheridge <ether@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Karen Etheridge.
+This software is copyright (c) 2012 by Karen Etheridge.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
