@@ -687,7 +687,7 @@ I am also usually active on irc, as 'ether' at C<irc.perl.org>.
 
 =head1 ACKNOWLEDGEMENTS
 
-=for stopwords AirG Yury Zavarin
+=for stopwords AirG Yury Zavarin mst
 
 L<AirG Inc.|http://corp.airg.com>, my former employer, and the first user of this distribution.
 
