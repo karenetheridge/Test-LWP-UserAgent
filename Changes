@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - skip testing examples/ code when optional/undeclared prereqs are
+            not available
 
 0.020     2013-10-26 16:31:48Z (Karen Etheridge)
           - fixed tests from using example.com to iana.org, to ensure we get a
