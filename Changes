@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.022     2013-11-01 04:01:19Z
           - prevent optional test from failing on perls < 5.10
 
 0.021     2013-10-31 02:24:49Z (Karen Etheridge)
