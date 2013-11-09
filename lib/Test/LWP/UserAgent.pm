@@ -422,9 +422,7 @@ them, which can simplify some of your application code.
 
 =head1 METHODS
 
-=over
-
-=item * C<new>
+=head2 C<new>
 
 Accepts all options as in L<LWP::UserAgent>, including C<use_eval>, an
 undocumented boolean which is enabled by default. When set, sending the HTTP
@@ -455,7 +453,7 @@ If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
 
-=item * C<map_response($request_specification, $http_response)>
+=head2 C<map_response($request_specification, $http_response)>
 
 With this method, you set up what L<HTTP::Response> should be returned for each
 request received.
@@ -514,7 +512,7 @@ Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
 then examined. When no matches have been found, a 404 response is returned.
 
-=item * C<map_network_response($request_description)>
+=head2 C<map_network_response($request_description)>
 
 Same as C<map_response> above, only requests that match this description will
 not use a response that you specify, but instead uses a real L<LWP::UserAgent>
@@ -525,7 +523,7 @@ are used for making the real network call. If called as a class method, a
 pristine L<LWP::UserAgent> object with no customized options will be used
 instead.
 
-=item * C<unmap_all(instance_only?)>
+=head2 C<unmap_all(instance_only?)>
 
 When called as a class method, removes all mappings set up globally (across all
 objects). Mappings set up on an individual object will still remain.
@@ -535,7 +533,7 @@ this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
 
-=item * C<register_psgi($domain, $app)>
+=head2 C<register_psgi($domain, $app)>
 
 Register a particular L<PSGI> app (code reference) to be used when requests
 for a domain are received (matches are made exactly against
@@ -559,7 +557,7 @@ a server so as to test your client code.
 You might find using L<Plack::Test> or L<Plack::Test::ExternalServer> easier
 for your needs, so check those out as well.
 
-=item * C<unregister_psgi($domain, instance_only?)>
+=head2 C<unregister_psgi($domain, instance_only?)>
 
 When called as a class method, removes a domain->PSGI app entry that had been
 registered globally.  Some mappings set up on an individual object may still
@@ -575,7 +573,7 @@ then add C<undef> as a mapping on your instance:
 
     $useragent->map_response($domain, undef);
 
-=item * C<last_http_request_sent>
+=head2 C<last_http_request_sent>
 
 The last L<HTTP::Request> object that this object (if called on an object) or
 module (if called as a class method) processed, whether or not it matched a
@@ -583,14 +581,14 @@ mapping you set up earlier.
 
 Note that this is also available via C<< last_http_response_received->request >>.
 
-=item * C<last_http_response_received>
+=head2 C<last_http_response_received>
 
 The last L<HTTP::Response> object that this module returned, as a result of a
 mapping you set up earlier with C<map_response>. You shouldn't normally need to
 use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
-=item * C<last_useragent>
+=head2 C<last_useragent>
 
 =for stopwords useragent
 
@@ -599,7 +597,7 @@ Obviously this only provides new information if called as a class method; you
 can use this if you don't have direct control over the useragent itself, to
 get the object that was used, to verify options such as the network timeout.
 
-=item * C<network_fallback>
+=head2 C<network_fallback>
 
 =for stopwords ORed
 
@@ -608,7 +606,7 @@ this object (if called as an instance method), or globally, if called as a
 class method.  Note that the actual behaviour used on an object is the ORed
 value of the instance setting and the global setting.
 
-=item * C<send_request($request)>
+=head2 C<send_request($request)>
 
 This is the only method from L<LWP::UserAgent> that has been overridden, which
 processes the L<HTTP::Request>, sends to the network, then creates the
@@ -617,8 +615,6 @@ local and global domain registrations, and local and global mappings (in this
 order) and returns the first match found; otherwise, a simple 404 response is
 returned (unless C<network_fallback> was specified as a constructor option,
 in which case unmatched requests will be delivered to the network.)
-
-=back
 
 All other methods from L<LWP::UserAgent> are available unchanged.
 
