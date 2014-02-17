@@ -6,7 +6,6 @@ use Test::Deep;
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use Test::LWP::UserAgent;
-use Class::Load 'try_load_class';
 
 {
     package MyRequest;
@@ -57,7 +56,7 @@ use Class::Load 'try_load_class';
 }
 
 SKIP: {
-    try_load_class('HTTP::Message::PSGI')
+    eval 'require HTTP::Message::PSGI'
         or skip('HTTP::Message::PSGI is required for the remainder of these tests', 3);
 
     # mapped response is a coderef that turns a PSGI $env into an HTTP response

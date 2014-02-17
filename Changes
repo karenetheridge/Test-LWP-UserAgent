@@ -2,6 +2,7 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
           - uses of Test::TempDir switched to Path::Tiny
+          - removed unneeded use of Class::Load
 
 0.022     2013-11-01 04:01:19Z
           - prevent optional test from failing on perls < 5.10
