@@ -1,9 +1,5 @@
 /.build/
-!.gitignore
-cover_db/
-test-mydeps-*
-nytprof*
-.*.sw[a-z]
-/Test-LWP-UserAgent-*
+/Test-LWP-UserAgent-*/
+/Test-LWP-UserAgent-*.tar.gz
 todo.txt
 todo/
