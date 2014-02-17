@@ -4,7 +4,7 @@ Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing netw
 
 # VERSION
 
-version 0.022
+version 0.023
 
 # SYNOPSIS
 
@@ -38,7 +38,7 @@ Then, in your tests:
 
 # DESCRIPTION
 
-This module is a subclass of [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) which overrides a few key
+This module is a subclass of [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) which overrides a few key
 low-level methods that are concerned with actually sending your request over
 the network, allowing an interception of that request and simulating a
 particular response.  This greatly facilitates testing of client networking
@@ -55,8 +55,8 @@ There are a lot of different ways you can set up the response mappings, and
 hook into this module; see the documentation for the individual interface
 methods.
 
-You can use a [PSGI](http://search.cpan.org/perldoc?PSGI) app to handle the requests - see `examples/call\_psgi.t`
-in this dist, and also ["register\_psgi"](#register\_psgi) below.
+You can use a [PSGI](https://metacpan.org/pod/PSGI) app to handle the requests - see `examples/call_psgi.t`
+in this dist, and also ["register\_psgi"](#register_psgi) below.
 
 OR, you can route some or all requests through the network as normal, but
 still gain the hooks provided by this class to test what was sent and
@@ -88,7 +88,7 @@ or:
 
 ## Ensuring the right useragent is used
 
-Note that [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) itself is not monkey-patched - you must use
+Note that [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) itself is not monkey-patched - you must use
 this module (or a subclass) to send your request, or it cannot be caught and
 processed.
 
@@ -97,201 +97,201 @@ lazily-built Moose attribute; if no override is provided at construction time,
 default to `LWP::UserAgent->new(%options)`.
 
 Additionally, most methods can be called as class methods, which will store
-the settings globally, so that any instance of [Test::LWP::UserAgent](http://search.cpan.org/perldoc?Test::LWP::UserAgent) can use
+the settings globally, so that any instance of [Test::LWP::UserAgent](https://metacpan.org/pod/Test::LWP::UserAgent) can use
 them, which can simplify some of your application code.
 
 # METHODS
 
-- `new`
+## `new`
 
-    Accepts all options as in [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent), including `use_eval`, an
-    undocumented boolean which is enabled by default. When set, sending the HTTP
-    request is wrapped in an `eval {}`, allowing all exceptions to be caught
-    and an appropriate error response (usually HTTP 500) to be returned. You may
-    want to unset this if you really want to test extraordinary errors within your
-    networking code.  Normally, you should leave it alone, as [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) and
-    this module are capable of handling normal errors.
+Accepts all options as in [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent), including `use_eval`, an
+undocumented boolean which is enabled by default. When set, sending the HTTP
+request is wrapped in an `eval {}`, allowing all exceptions to be caught
+and an appropriate error response (usually HTTP 500) to be returned. You may
+want to unset this if you really want to test extraordinary errors within your
+networking code.  Normally, you should leave it alone, as [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) and
+this module are capable of handling normal errors.
 
-    Plus, this option is added:
+Plus, this option is added:
 
-    - `network_fallback => <boolean>`
+- `network_fallback => <boolean>`
 
-        If true, requests passing through this object that do not match a
-        previously-configured mapping or registration will be directed to the network.
-        (To only divert _matched_ requests rather than unmatched requests, use
-        `map_network_response`, see below.)
+    If true, requests passing through this object that do not match a
+    previously-configured mapping or registration will be directed to the network.
+    (To only divert _matched_ requests rather than unmatched requests, use
+    `map_network_response`, see below.)
 
-        This option is also available as a read/write accessor via
-        `$useragent->network_fallback(<value?>)`.
+    This option is also available as a read/write accessor via
+    `$useragent->network_fallback(<value?>)`.
 
-    __All other methods below may be called on a specific object instance, or as a class method.__
-    If called as on a blessed object, the action performed or data returned is
-    limited to just that object; if called as a class method, the action or data is
-    global.
+__All other methods below may be called on a specific object instance, or as a class method.__
+If called as on a blessed object, the action performed or data returned is
+limited to just that object; if called as a class method, the action or data is
+global.
 
-- `map_response($request_specification, $http_response)`
+## `map_response($request_specification, $http_response)`
 
-    With this method, you set up what [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) should be returned for each
-    request received.
+With this method, you set up what [HTTP::Response](https://metacpan.org/pod/HTTP::Response) should be returned for each
+request received.
 
-    The request match specification can be described in multiple ways:
+The request match specification can be described in multiple ways:
 
-    - string
+- string
 
-        The string is matched identically against the `host` field of the [URI](http://search.cpan.org/perldoc?URI) in the request.
+    The string is matched identically against the `host` field of the [URI](https://metacpan.org/pod/URI) in the request.
 
-            $test_ua->map_response('example.com', HTTP::Response->new('500'));
+        $test_ua->map_response('example.com', HTTP::Response->new('500'));
 
-    - regexp
+- regexp
 
-        The regexp is matched against the URI in the request.
+    The regexp is matched against the URI in the request.
 
-            $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
-            $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
+        $test_ua->map_response(qr{foo/bar}, HTTP::Response->new('200'));
+        $test_ua->map_response(qr{baz/quux}, HTTP::Response->new('500'));
 
-    - code
+- code
 
-        The provided coderef is passed a single argument, the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), and
-        returns a boolean indicating if there is a match.
+    The provided coderef is passed a single argument, the [HTTP::Request](https://metacpan.org/pod/HTTP::Request), and
+    returns a boolean indicating if there is a match.
 
-            # matches all GET and POST requests
-            $test_ua->map_response(sub {
-                    my $request = shift;
-                    return 1 if $request->method eq 'GET' || $request->method eq 'POST';
-                },
-                HTTP::Response->new('200'),
-            );
-
-    - [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object
-
-        The [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object is matched identically (including all query
-        parameters, headers etc) against the provided object.
-
-    The response can be represented either as a literal [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object, or
-    as a coderef that is run at the time of matching, with the request passed as
-    the single argument:
-
-        HTTP::Response->new(...);
-
-    or
-
-        sub {
-            my $request = shift;
-            HTTP::Response->new(...);
-        }
-
-    Instance mappings take priority over global (class method) mappings - if no
-    matches are found from mappings added to the instance, the global mappings are
-    then examined. When no matches have been found, a 404 response is returned.
-
-- `map_network_response($request_description)`
-
-    Same as `map_response` above, only requests that match this description will
-    not use a response that you specify, but instead uses a real [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent)
-    to dispatch your request to the network.
-
-    If called on an instance, all options passed to the constructor (e.g. timeout)
-    are used for making the real network call. If called as a class method, a
-    pristine [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) object with no customized options will be used
-    instead.
-
-- `unmap_all(instance_only?)`
-
-    When called as a class method, removes all mappings set up globally (across all
-    objects). Mappings set up on an individual object will still remain.
-
-    When called as an object method, removes _all_ mappings both globally and on
-    this instance, unless a true value is passed as an argument, in which only
-    mappings local to the object will be removed. (Any true value will do, so you
-    can pass a meaningful string.)
-
-- `register_psgi($domain, $app)`
-
-    Register a particular [PSGI](http://search.cpan.org/perldoc?PSGI) app (code reference) to be used when requests
-    for a domain are received (matches are made exactly against
-    `$request->uri->host`).  The request is passed to the `$app` for processing,
-    and the [PSGI](http://search.cpan.org/perldoc?PSGI) response is converted back to an [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) (you must
-    already have loaded [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI) or equivalent, as this is not done
-    for you).
-
-    You can also use `register_psgi` with a regular expression as the first
-    argument, or any of the other forms used by `map_response`, if you wish, as
-    calling `$test_ua->register_psgi($domain, $app)` is equivalent to:
-
-        $test_ua->map_response(
-            $domain,
-            sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
+        # matches all GET and POST requests
+        $test_ua->map_response(sub {
+                my $request = shift;
+                return 1 if $request->method eq 'GET' || $request->method eq 'POST';
+            },
+            HTTP::Response->new('200'),
         );
 
-    This feature is useful for testing your PSGI applications, or for simulating
-    a server so as to test your client code.
+- [HTTP::Request](https://metacpan.org/pod/HTTP::Request) object
 
-    You might find using [Plack::Test](http://search.cpan.org/perldoc?Plack::Test) or [Plack::Test::ExternalServer](http://search.cpan.org/perldoc?Plack::Test::ExternalServer) easier
-    for your needs, so check those out as well.
+    The [HTTP::Request](https://metacpan.org/pod/HTTP::Request) object is matched identically (including all query
+    parameters, headers etc) against the provided object.
 
-- `unregister_psgi($domain, instance_only?)`
+The response can be represented either as a literal [HTTP::Request](https://metacpan.org/pod/HTTP::Request) object, or
+as a coderef that is run at the time of matching, with the request passed as
+the single argument:
 
-    When called as a class method, removes a domain->PSGI app entry that had been
-    registered globally.  Some mappings set up on an individual object may still
-    remain.
+    HTTP::Response->new(...);
 
-    When called as an object method, removes a domain registration that was made
-    both globally and locally, unless a true value was passed as the second
-    argument, in which case only the registration local to the object will be
-    removed. This allows a different mapping made globally to take over.
+or
 
-    If you want to mask a global registration on just one particular instance,
-    then add `undef` as a mapping on your instance:
+    sub {
+        my $request = shift;
+        HTTP::Response->new(...);
+    }
 
-        $useragent->map_response($domain, undef);
+Instance mappings take priority over global (class method) mappings - if no
+matches are found from mappings added to the instance, the global mappings are
+then examined. When no matches have been found, a 404 response is returned.
 
-- `last_http_request_sent`
+## `map_network_response($request_description)`
 
-    The last [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) object that this object (if called on an object) or
-    module (if called as a class method) processed, whether or not it matched a
-    mapping you set up earlier.
+Same as `map_response` above, only requests that match this description will
+not use a response that you specify, but instead uses a real [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent)
+to dispatch your request to the network.
 
-    Note that this is also available via `last_http_response_received->request`.
+If called on an instance, all options passed to the constructor (e.g. timeout)
+are used for making the real network call. If called as a class method, a
+pristine [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) object with no customized options will be used
+instead.
 
-- `last_http_response_received`
+## `unmap_all(instance_only?)`
 
-    The last [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) object that this module returned, as a result of a
-    mapping you set up earlier with `map_response`. You shouldn't normally need to
-    use this, as you know what you responded with - you should instead be testing
-    how your code reacted to receiving this response.
+When called as a class method, removes all mappings set up globally (across all
+objects). Mappings set up on an individual object will still remain.
 
-- `last_useragent`
+When called as an object method, removes _all_ mappings both globally and on
+this instance, unless a true value is passed as an argument, in which only
+mappings local to the object will be removed. (Any true value will do, so you
+can pass a meaningful string.)
 
-    The last Test::LWP::UserAgent object that was used to send a request.
-    Obviously this only provides new information if called as a class method; you
-    can use this if you don't have direct control over the useragent itself, to
-    get the object that was used, to verify options such as the network timeout.
+## `register_psgi($domain, $app)`
 
-- `network_fallback`
+Register a particular [PSGI](https://metacpan.org/pod/PSGI) app (code reference) to be used when requests
+for a domain are received (matches are made exactly against
+`$request->uri->host`).  The request is passed to the `$app` for processing,
+and the [PSGI](https://metacpan.org/pod/PSGI) response is converted back to an [HTTP::Response](https://metacpan.org/pod/HTTP::Response) (you must
+already have loaded [HTTP::Message::PSGI](https://metacpan.org/pod/HTTP::Message::PSGI) or equivalent, as this is not done
+for you).
 
-    Getter/setter method for the network\_fallback preference that will be used on
-    this object (if called as an instance method), or globally, if called as a
-    class method.  Note that the actual behaviour used on an object is the ORed
-    value of the instance setting and the global setting.
+You can also use `register_psgi` with a regular expression as the first
+argument, or any of the other forms used by `map_response`, if you wish, as
+calling `$test_ua->register_psgi($domain, $app)` is equivalent to:
 
-- `send_request($request)`
+    $test_ua->map_response(
+        $domain,
+        sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
+    );
 
-    This is the only method from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) that has been overridden, which
-    processes the [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), sends to the network, then creates the
-    [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response) object from the reply received. Here, we loop through your
-    local and global domain registrations, and local and global mappings (in this
-    order) and returns the first match found; otherwise, a simple 404 response is
-    returned (unless `network_fallback` was specified as a constructor option,
-    in which case unmatched requests will be delivered to the network.)
+This feature is useful for testing your PSGI applications, or for simulating
+a server so as to test your client code.
 
-All other methods from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) are available unchanged.
+You might find using [Plack::Test](https://metacpan.org/pod/Plack::Test) or [Plack::Test::ExternalServer](https://metacpan.org/pod/Plack::Test::ExternalServer) easier
+for your needs, so check those out as well.
+
+## `unregister_psgi($domain, instance_only?)`
+
+When called as a class method, removes a domain->PSGI app entry that had been
+registered globally.  Some mappings set up on an individual object may still
+remain.
+
+When called as an object method, removes a domain registration that was made
+both globally and locally, unless a true value was passed as the second
+argument, in which case only the registration local to the object will be
+removed. This allows a different mapping made globally to take over.
+
+If you want to mask a global registration on just one particular instance,
+then add `undef` as a mapping on your instance:
+
+    $useragent->map_response($domain, undef);
+
+## `last_http_request_sent`
+
+The last [HTTP::Request](https://metacpan.org/pod/HTTP::Request) object that this object (if called on an object) or
+module (if called as a class method) processed, whether or not it matched a
+mapping you set up earlier.
+
+Note that this is also available via `last_http_response_received->request`.
+
+## `last_http_response_received`
+
+The last [HTTP::Response](https://metacpan.org/pod/HTTP::Response) object that this module returned, as a result of a
+mapping you set up earlier with `map_response`. You shouldn't normally need to
+use this, as you know what you responded with - you should instead be testing
+how your code reacted to receiving this response.
+
+## `last_useragent`
+
+The last Test::LWP::UserAgent object that was used to send a request.
+Obviously this only provides new information if called as a class method; you
+can use this if you don't have direct control over the useragent itself, to
+get the object that was used, to verify options such as the network timeout.
+
+## `network_fallback`
+
+Getter/setter method for the network\_fallback preference that will be used on
+this object (if called as an instance method), or globally, if called as a
+class method.  Note that the actual behaviour used on an object is the ORed
+value of the instance setting and the global setting.
+
+## `send_request($request)`
+
+This is the only method from [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) that has been overridden, which
+processes the [HTTP::Request](https://metacpan.org/pod/HTTP::Request), sends to the network, then creates the
+[HTTP::Response](https://metacpan.org/pod/HTTP::Response) object from the reply received. Here, we loop through your
+local and global domain registrations, and local and global mappings (in this
+order) and returns the first match found; otherwise, a simple 404 response is
+returned (unless `network_fallback` was specified as a constructor option,
+in which case unmatched requests will be delivered to the network.)
+
+All other methods from [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) are available unchanged.
 
 # Usage with SOAP requests
 
-- [SOAP::Lite](http://search.cpan.org/perldoc?SOAP::Lite)
+- [SOAP::Lite](https://metacpan.org/pod/SOAP::Lite)
 
-    To use this module when communicating via [SOAP::Lite](http://search.cpan.org/perldoc?SOAP::Lite) with a SOAP server (either a real one,
-    with live network requests, [see above](#network\_fallback) or with one simulated
+    To use this module when communicating via [SOAP::Lite](https://metacpan.org/pod/SOAP::Lite) with a SOAP server (either a real one,
+    with live network requests, [see above](#network_fallback) or with one simulated
     with mapped responses), simply do this:
 
         use SOAP::Lite;
@@ -300,12 +300,12 @@ All other methods from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::User
 
     You must then make all your configuration changes and mappings globally.
 
-    See also ["CHANGING THE DEFAULT USERAGENT CLASS" in SOAP::Transport](http://search.cpan.org/perldoc?SOAP::Transport#CHANGING THE DEFAULT USERAGENT CLASS).
+    See also ["CHANGING THE DEFAULT USERAGENT CLASS" in SOAP::Transport](https://metacpan.org/pod/SOAP::Transport#CHANGING-THE-DEFAULT-USERAGENT-CLASS).
 
-- [XML::Compile::SOAP](http://search.cpan.org/perldoc?XML::Compile::SOAP)
+- [XML::Compile::SOAP](https://metacpan.org/pod/XML::Compile::SOAP)
 
-    When using [XML::Compile::SOAP](http://search.cpan.org/perldoc?XML::Compile::SOAP) with a compiled WSDL, you can change the
-    useragent object via [XML::Compile::Transport::SOAPHTTP](http://search.cpan.org/perldoc?XML::Compile::Transport::SOAPHTTP):
+    When using [XML::Compile::SOAP](https://metacpan.org/pod/XML::Compile::SOAP) with a compiled WSDL, you can change the
+    useragent object via [XML::Compile::Transport::SOAPHTTP](https://metacpan.org/pod/XML::Compile::Transport::SOAPHTTP):
 
         my $call = $wsdl->compileClient(
             $interface_name,
@@ -315,30 +315,30 @@ All other methods from [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::User
             ),
         );
 
-    See also ["Adding HTTP headers" in XML::Compile::SOAP::FAQ](http://search.cpan.org/perldoc?XML::Compile::SOAP::FAQ#Adding HTTP headers).
+    See also ["Adding HTTP headers" in XML::Compile::SOAP::FAQ](https://metacpan.org/pod/XML::Compile::SOAP::FAQ#Adding-HTTP-headers).
 
 # MOTIVATION
 
-Most mock libraries on the CPAN use [Test::MockObject](http://search.cpan.org/perldoc?Test::MockObject), which is widely considered
+Most mock libraries on the CPAN use [Test::MockObject](https://metacpan.org/pod/Test::MockObject), which is widely considered
 not good practice (among other things, `@ISA` is violated, it requires
 knowing far too much about the module's internals, and is very clumsy to work
-with).  ([This blog entry](http://search.cpan.org/perldoc?hashbang.ca#2011/09/23/mocking-lwpuseragent)
+with).  ([This blog entry](https://metacpan.org/pod/hashbang.ca#mocking-lwpuseragent)
 is one of many that chronicles its issues.)
 
-This module is a direct descendant of [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent), exports nothing into
+This module is a direct descendant of [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent), exports nothing into
 your namespace, and all access is via method calls, so it is fully inheritable
 should you desire to add more features or override some bits of functionality.
 
-(Aside from the constructor), it only overrides the one method in [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent) that issues calls to the
-network, so real [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) and [HTTP::Headers](http://search.cpan.org/perldoc?HTTP::Headers) objects are used
+(Aside from the constructor), it only overrides the one method in [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) that issues calls to the
+network, so real [HTTP::Request](https://metacpan.org/pod/HTTP::Request) and [HTTP::Headers](https://metacpan.org/pod/HTTP::Headers) objects are used
 throughout. It provides a method (`last_http_request_sent`) to access the last
-[HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request), for testing things like the URI and headers that your code
-sent to [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent).
+[HTTP::Request](https://metacpan.org/pod/HTTP::Request), for testing things like the URI and headers that your code
+sent to [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent).
 
 # SUPPORT
 
 Bugs may be submitted through [the RT bug tracker](https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent)
-(or [bug-Test-LWP-UserAgent@rt.cpan.org](http://search.cpan.org/perldoc?bug-Test-LWP-UserAgent@rt.cpan.org)).
+(or [bug-Test-LWP-UserAgent@rt.cpan.org](https://metacpan.org/pod/bug-Test-LWP-UserAgent@rt.cpan.org)).
 I am also usually active on irc, as 'ether' at `irc.perl.org`.
 
 # ACKNOWLEDGEMENTS
@@ -348,17 +348,17 @@ I am also usually active on irc, as 'ether' at `irc.perl.org`.
 mst - Matt S. Trout <mst@shadowcat.co.uk>, for the better name of this
 distribution, and for the PSGI registration concept.
 
-Also Yury Zavarin, whose [Test::Mock::LWP::Dispatch](http://search.cpan.org/perldoc?Test::Mock::LWP::Dispatch) inspired me to write this
+Also Yury Zavarin, whose [Test::Mock::LWP::Dispatch](https://metacpan.org/pod/Test::Mock::LWP::Dispatch) inspired me to write this
 module, and from where I borrowed some aspects of the API.
 
 # SEE ALSO
 
 - [Perl advent article, 2012](http://www.perladvent.org/2012/2012-12-12.html)
-- [Test::Mock::LWP::Dispatch](http://search.cpan.org/perldoc?Test::Mock::LWP::Dispatch)
-- [Test::Mock::LWP::UserAgent](http://search.cpan.org/perldoc?Test::Mock::LWP::UserAgent)
-- [LWP::UserAgent](http://search.cpan.org/perldoc?LWP::UserAgent)
-- [PSGI](http://search.cpan.org/perldoc?PSGI), [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI), [LWP::Protocol::PSGI](http://search.cpan.org/perldoc?LWP::Protocol::PSGI),
-- [Plack::Test](http://search.cpan.org/perldoc?Plack::Test), [Plack::Test::ExternalServer](http://search.cpan.org/perldoc?Plack::Test::ExternalServer)
+- [Test::Mock::LWP::Dispatch](https://metacpan.org/pod/Test::Mock::LWP::Dispatch)
+- [Test::Mock::LWP::UserAgent](https://metacpan.org/pod/Test::Mock::LWP::UserAgent)
+- [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent)
+- [PSGI](https://metacpan.org/pod/PSGI), [HTTP::Message::PSGI](https://metacpan.org/pod/HTTP::Message::PSGI), [LWP::Protocol::PSGI](https://metacpan.org/pod/LWP::Protocol::PSGI),
+- [Plack::Test](https://metacpan.org/pod/Plack::Test), [Plack::Test::ExternalServer](https://metacpan.org/pod/Plack::Test::ExternalServer)
 
 # AUTHOR
 

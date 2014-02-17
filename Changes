@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.023     2014-02-17 01:42:41Z
           - uses of Test::TempDir switched to Path::Tiny
           - removed unneeded use of Class::Load
 
