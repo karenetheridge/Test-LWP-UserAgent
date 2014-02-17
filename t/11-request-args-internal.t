@@ -4,7 +4,6 @@ use warnings FATAL => 'all';
 use Test::More;
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
-use Test::TempDir;
 use Path::Tiny;
 use Test::LWP::UserAgent;
 
@@ -29,13 +28,14 @@ use Test::LWP::UserAgent;
         ),
     );
 
-    my (undef, $tmpfile) = tempfile;
+    my $tmpfile = Path::Tiny->tempfile;
 
     my $response = $useragent->get(
         'http://foo.com',
-        ':content_file' => $tmpfile);
+        ':content_file' => $tmpfile->stringify,
+    );
 
-    my $contents = path($tmpfile)->slurp;
+    my $contents = $tmpfile->slurp;
     is($contents, 'all good!', 'response body is saved to file (internal responses)');
     is($response->content, '', 'response body is removed');
     cmp_deeply(
@@ -61,11 +61,11 @@ use Test::LWP::UserAgent;
         ),
     );
 
-    my (undef, $tmpfile) = tempfile;
+    my $tmpfile = Path::Tiny->tempfile;
 
-    my $response = $useragent->mirror('http://foo.com', $tmpfile);
+    my $response = $useragent->mirror('http://foo.com', $tmpfile->stringify);
 
-    my $contents = path($tmpfile)->slurp;
+    my $contents = $tmpfile->slurp;
     is($contents, 'all good!', 'response body is saved to file (internal responses)');
     is($response->content, '', 'response body is removed');
     cmp_deeply(

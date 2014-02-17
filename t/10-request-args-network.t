@@ -11,7 +11,6 @@ BEGIN {
 use Test::More;
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
-use Test::TempDir;
 use Path::Tiny;
 use Test::LWP::UserAgent;
 
@@ -26,11 +25,14 @@ my $expected_content = $response->decoded_content;
 {
     # network_fallback case
 
-    my (undef, $tmpfile) = tempfile;
+    my $tmpfile = Path::Tiny->tempfile;
 
-    my $response = $useragent->get('http://example.com/', ':content_file' => $tmpfile);
+    my $response = $useragent->get(
+        'http://example.com/',
+        ':content_file' => $tmpfile->stringify,
+    );
 
-    my $contents = path($tmpfile)->slurp;
+    my $contents = $tmpfile->slurp;
     is($contents, $expected_content, 'response body is saved to file (network responses)');
 
     is($response->content, '', 'response body is removed');
