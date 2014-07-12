@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::More;
-use Test::Warnings 0.005 ':no_end_test', ':all';
+use Test::Warnings 0.009 ':no_end_test', ':all';
 use Test::Deep;
 use Test::Fatal;
 use Scalar::Util 'refaddr';
