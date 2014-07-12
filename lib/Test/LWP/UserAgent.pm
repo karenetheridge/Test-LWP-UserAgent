@@ -407,6 +407,8 @@ or:
         'I should have gotten an OK response',
     );
 
+=for stopwords useragent
+
 =head2 Ensuring the right useragent is used
 
 Note that L<LWP::UserAgent> itself is not monkey-patched - you must use
@@ -590,8 +592,6 @@ use this, as you know what you responded with - you should instead be testing
 how your code reacted to receiving this response.
 
 =head2 C<last_useragent>
-
-=for stopwords useragent
 
 The last Test::LWP::UserAgent object that was used to send a request.
 Obviously this only provides new information if called as a class method; you
