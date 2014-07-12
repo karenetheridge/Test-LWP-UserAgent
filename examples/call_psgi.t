@@ -2,10 +2,10 @@ use strict;
 use warnings;
 
 use Test::More 0.88;
+use Test::Requires 'HTTP::Message::PSGI';
 use Test::Warnings;
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;
-use HTTP::Message::PSGI;
 
 my $useragent = Test::LWP::UserAgent->new;
 $useragent->register_psgi('example.com' => sub {
