@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - tests that use the network now respect NO_NETWORK_TESTING as well
+            as EXTENDED_TESTING
 
 0.023     2014-02-17 01:42:41Z
           - uses of Test::TempDir switched to Path::Tiny

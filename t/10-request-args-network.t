@@ -1,14 +1,16 @@
 use strict;
 use warnings FATAL => 'all';
 
+use Test::More;
 BEGIN {
-    unless ($ENV{AUTHOR_TESTING}) {
-        require Test::More;
-        Test::More::plan(skip_all => 'these tests use the network, and are for author testing');
+    if ($ENV{NO_NETWORK_TESTING}
+        or (not $ENV{AUTHOR_TESTING} and not $ENV{EXTENDED_TESTING})
+    )
+    {
+        plan skip_all => 'these tests use the network: set EXTENDED_TESTING or AUTHOR_TESTING to run';
     }
 }
 
-use Test::More;
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
 use Path::Tiny;
