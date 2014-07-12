@@ -4,6 +4,8 @@ Revision history for {{$dist->name}}
           - tests that use the network now respect NO_NETWORK_TESTING as well
             as EXTENDED_TESTING
           - switch from using JSON to JSON::MaybeXS
+          - add conditional prereq on latest version of URI, when perl version
+            is at 5.21.2 or higher, to get a fix for deprecated \C in regexes
 
 0.023     2014-02-17 01:42:41Z
           - uses of Test::TempDir switched to Path::Tiny
