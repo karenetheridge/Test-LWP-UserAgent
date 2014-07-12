@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::More;
-use Test::Requires qw(JSON Moose);
+use Test::Requires qw(JSON::MaybeXS Moose);
 
 plan skip_all => 'this example requires perl 5.10' if $^V < 5.010;
 

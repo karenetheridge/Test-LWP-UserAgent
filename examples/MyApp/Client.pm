@@ -4,7 +4,7 @@ use warnings;
 
 use Moose;
 use LWP::UserAgent;
-use JSON;
+use JSON::MaybeXS;
 
 has useragent => (
     is => 'ro', isa => 'LWP::UserAgent',
