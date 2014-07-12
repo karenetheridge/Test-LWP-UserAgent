@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Test::LWP::UserAgent;
-# ABSTRACT: a LWP::UserAgent suitable for simulating and testing network calls
+# ABSTRACT: A LWP::UserAgent suitable for simulating and testing network calls
 # vim: set ts=8 sw=4 tw=78 et :
 
 use parent 'LWP::UserAgent';
