@@ -370,7 +370,7 @@ The synopsis describes a classic case where you want to test how your
 application reacts to various responses from the server.  This module will let
 you send back various responses depending on the request, without having to
 set up a real server to test against.  This can be invaluable when you need to
-test edge cases or error conditions that do not normally arise from the
+test edge cases or error conditions that are not normally returned from the
 server.
 
 There are a lot of different ways you can set up the response mappings, and
