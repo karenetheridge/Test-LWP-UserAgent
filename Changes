@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.024     2014-07-14 01:32:46Z
           - tests that use the network now respect NO_NETWORK_TESTING as well
             as EXTENDED_TESTING
           - switch from using JSON to JSON::MaybeXS

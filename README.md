@@ -1,10 +1,10 @@
 # NAME
 
-Test::LWP::UserAgent - a LWP::UserAgent suitable for simulating and testing network calls
+Test::LWP::UserAgent - A LWP::UserAgent suitable for simulating and testing network calls
 
 # VERSION
 
-version 0.023
+version 0.024
 
 # SYNOPSIS
 
@@ -48,7 +48,7 @@ The synopsis describes a classic case where you want to test how your
 application reacts to various responses from the server.  This module will let
 you send back various responses depending on the request, without having to
 set up a real server to test against.  This can be invaluable when you need to
-test edge cases or error conditions that do not normally arise from the
+test edge cases or error conditions that are not normally returned from the
 server.
 
 There are a lot of different ways you can set up the response mappings, and
@@ -124,7 +124,7 @@ Plus, this option is added:
     This option is also available as a read/write accessor via
     `$useragent->network_fallback(<value?>)`.
 
-__All other methods below may be called on a specific object instance, or as a class method.__
+**All other methods below may be called on a specific object instance, or as a class method.**
 If called as on a blessed object, the action performed or data returned is
 limited to just that object; if called as a class method, the action or data is
 global.
@@ -288,34 +288,34 @@ All other methods from [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent)
 
 # Usage with SOAP requests
 
-- [SOAP::Lite](https://metacpan.org/pod/SOAP::Lite)
+## [SOAP::Lite](https://metacpan.org/pod/SOAP::Lite)
 
-    To use this module when communicating via [SOAP::Lite](https://metacpan.org/pod/SOAP::Lite) with a SOAP server (either a real one,
-    with live network requests, [see above](#network_fallback) or with one simulated
-    with mapped responses), simply do this:
+To use this module when communicating via [SOAP::Lite](https://metacpan.org/pod/SOAP::Lite) with a SOAP server (either a real one,
+with live network requests, [see above](#network_fallback) or with one simulated
+with mapped responses), simply do this:
 
-        use SOAP::Lite;
-        use SOAP::Transport::HTTP;
-        $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
+    use SOAP::Lite;
+    use SOAP::Transport::HTTP;
+    $SOAP::Transport::HTTP::Client::USERAGENT_CLASS = 'Test::LWP::UserAgent';
 
-    You must then make all your configuration changes and mappings globally.
+You must then make all your configuration changes and mappings globally.
 
-    See also ["CHANGING THE DEFAULT USERAGENT CLASS" in SOAP::Transport](https://metacpan.org/pod/SOAP::Transport#CHANGING-THE-DEFAULT-USERAGENT-CLASS).
+See also ["CHANGING THE DEFAULT USERAGENT CLASS" in SOAP::Transport](https://metacpan.org/pod/SOAP::Transport#CHANGING-THE-DEFAULT-USERAGENT-CLASS).
 
-- [XML::Compile::SOAP](https://metacpan.org/pod/XML::Compile::SOAP)
+## [XML::Compile::SOAP](https://metacpan.org/pod/XML::Compile::SOAP)
 
-    When using [XML::Compile::SOAP](https://metacpan.org/pod/XML::Compile::SOAP) with a compiled WSDL, you can change the
-    useragent object via [XML::Compile::Transport::SOAPHTTP](https://metacpan.org/pod/XML::Compile::Transport::SOAPHTTP):
+When using [XML::Compile::SOAP](https://metacpan.org/pod/XML::Compile::SOAP) with a compiled WSDL, you can change the
+useragent object via [XML::Compile::Transport::SOAPHTTP](https://metacpan.org/pod/XML::Compile::Transport::SOAPHTTP):
 
-        my $call = $wsdl->compileClient(
-            $interface_name,
-            transport => XML::Compile::Transport::SOAPHTTP->new(
-                user_agent => $useragent,
-                address => $wsdl->endPoint,
-            ),
-        );
+    my $call = $wsdl->compileClient(
+        $interface_name,
+        transport => XML::Compile::Transport::SOAPHTTP->new(
+            user_agent => $useragent,
+            address => $wsdl->endPoint,
+        ),
+    );
 
-    See also ["Adding HTTP headers" in XML::Compile::SOAP::FAQ](https://metacpan.org/pod/XML::Compile::SOAP::FAQ#Adding-HTTP-headers).
+See also ["Adding HTTP headers" in XML::Compile::SOAP::FAQ](https://metacpan.org/pod/XML::Compile::SOAP::FAQ#Adding-HTTP-headers).
 
 # MOTIVATION
 
