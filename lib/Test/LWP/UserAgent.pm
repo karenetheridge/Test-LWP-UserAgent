@@ -622,9 +622,7 @@ All other methods from L<LWP::UserAgent> are available unchanged.
 
 =head1 Usage with SOAP requests
 
-=over
-
-=item * L<SOAP::Lite>
+=head2 L<SOAP::Lite>
 
 To use this module when communicating via L<SOAP::Lite> with a SOAP server (either a real one,
 with live network requests, L<see above|/network_fallback> or with one simulated
@@ -638,7 +636,7 @@ You must then make all your configuration changes and mappings globally.
 
 See also L<SOAP::Transport/CHANGING THE DEFAULT USERAGENT CLASS>.
 
-=item * L<XML::Compile::SOAP>
+=head2 L<XML::Compile::SOAP>
 
 =for stopwords WSDL
 
@@ -654,8 +652,6 @@ useragent object via L<XML::Compile::Transport::SOAPHTTP>:
     );
 
 See also L<XML::Compile::SOAP::FAQ/Adding HTTP headers>.
-
-=back
 
 =head1 MOTIVATION
 
