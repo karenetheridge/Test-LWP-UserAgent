@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.025     2014-07-15 02:42:54Z
           - fix examples test that behaves badly on older perls
 
 0.024     2014-07-14 01:32:46Z
