@@ -10,7 +10,7 @@ use warnings;
 # interacts with the network. Therefore, we need to make the network behave in
 # different ways so we can test how we interact with it.
 
-use Test::More tests => 5;
+use Test::More;
 BEGIN { plan skip_all => 'this example requires perl 5.10' if $^V < 5.010; }
 use Test::Requires qw(JSON::MaybeXS Moose);
 use Test::Warnings 0.005 ':all';
@@ -53,3 +53,4 @@ is_deeply(\@ids, [], 'no ids returned for non-existent user');
 @ids = $client->get_indexes(user => 'barney');
 is_deeply(\@ids, [ 76 ], 'one id returned for regular user');
 
+done_testing;
