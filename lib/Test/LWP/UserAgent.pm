@@ -697,6 +697,7 @@ module, and from where I borrowed some aspects of the API.
 * L<Perl advent article, 2012|http://www.perladvent.org/2012/2012-12-12.html>
 * L<Test::Mock::LWP::Dispatch>
 * L<Test::Mock::LWP::UserAgent>
+* L<URI>, L<HTTP::Request>, L<HTTP::Response>
 * L<LWP::UserAgent>
 * L<PSGI>, L<HTTP::Message::PSGI>, L<LWP::Protocol::PSGI>,
 * L<Plack::Test>, L<Plack::Test::ExternalServer>
