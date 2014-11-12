@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - resolve test failure when a prereq is too old
 
 0.025     2014-07-15 02:42:54Z
           - fix examples test that behaves badly on older perls

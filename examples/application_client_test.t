@@ -13,7 +13,7 @@ use warnings;
 use Test::More;
 BEGIN { plan skip_all => 'this example requires perl 5.10' if $^V < 5.010; }
 use Test::Requires qw(JSON::MaybeXS Moose);
-use Test::Warnings 0.005 ':all';
+use Test::Warnings 0.009 ':all';
 use Test::LWP::UserAgent;
 
 use lib 'examples';
