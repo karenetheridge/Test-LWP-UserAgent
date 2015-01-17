@@ -4,10 +4,10 @@ use warnings FATAL => 'all';
 use Test::More;
 BEGIN {
     if ($ENV{NO_NETWORK_TESTING}
-        or (not $ENV{AUTHOR_TESTING} and not $ENV{EXTENDED_TESTING})
+        or (not $ENV{AUTHOR_TESTING} and not $ENV{AUTOMATED_TESTING} and not $ENV{EXTENDED_TESTING})
     )
     {
-        plan skip_all => 'these tests use the network: unset NO_NETWORK_TESTING and set EXTENDED_TESTING or AUTHOR_TESTING to run';
+        plan skip_all => 'these tests use the network: unset NO_NETWORK_TESTING and set EXTENDED_TESTING, AUTHOR_TESTING or AUTOMATED_TESTING to run';
     }
 }
 
