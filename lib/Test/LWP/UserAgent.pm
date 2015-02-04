@@ -83,6 +83,7 @@ sub map_response
     {
         push @response_map, [ $request_description, $response ];
     }
+    return $self;
 }
 
 sub map_network_response
@@ -152,6 +153,7 @@ sub unregister_psgi
     {
         @response_map = grep { $_->[0] ne $domain } @response_map;
     }
+    return $self;
 }
 
 sub last_http_request_sent
