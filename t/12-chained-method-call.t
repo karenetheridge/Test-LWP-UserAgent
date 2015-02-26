@@ -1,10 +1,11 @@
 use strict;
 use warnings FATAL => 'all';
 
+use Test::Requires 'HTTP::Message::PSGI';
+
 use Test::More;
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
-use HTTP::Message::PSGI ();
 use HTTP::Response ();
 use Test::LWP::UserAgent ();
 
