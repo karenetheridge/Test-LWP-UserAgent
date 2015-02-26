@@ -27,4 +27,12 @@ use Test::LWP::UserAgent ();
     isa_ok $ua, 'Test::LWP::UserAgent', 'unregister_psgi returns self';
 }
 
+{
+    my $ua = Test::LWP::UserAgent->new->map_network_response( abc => sub {} );
+    isa_ok $ua, 'Test::LWP::UserAgent', 'map_network_response returns self';
+
+    $ua = $ua->unmap_all;
+    isa_ok $ua, 'Test::LWP::UserAgent', 'unmap_all returns self';
+}
+
 done_testing();

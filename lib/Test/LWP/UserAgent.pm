@@ -101,6 +101,7 @@ sub map_network_response
         push @response_map,
             [ $request_description, sub { LWP::UserAgent->new->send_request($_[0]) } ];
     }
+    return $self;
 }
 
 sub unmap_all
@@ -118,6 +119,7 @@ sub unmap_all
             if $instance_only;
         @response_map = ();
     }
+    return $self;
 }
 
 sub register_psgi
@@ -531,6 +533,8 @@ are used for making the real network call. If called as a class method, a
 pristine L<LWP::UserAgent> object with no customized options will be used
 instead.
 
+This method returns the C<Test::LWP::UserAgent> object or class.
+
 =head2 C<unmap_all(instance_only?)>
 
 When called as a class method, removes all mappings set up globally (across all
@@ -540,6 +544,8 @@ When called as an object method, removes I<all> mappings both globally and on
 this instance, unless a true value is passed as an argument, in which only
 mappings local to the object will be removed. (Any true value will do, so you
 can pass a meaningful string.)
+
+This method returns the C<Test::LWP::UserAgent> object or class.
 
 =head2 C<register_psgi($domain, $app)>
 
