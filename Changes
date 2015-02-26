@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.027     2015-02-26 04:57:32Z
           - register_psgi, unregister_psgi, map_response, map_network_response
             and unmap_all all return their invocant, to allow for method
             chaining (Tom Hukins, github #2)
