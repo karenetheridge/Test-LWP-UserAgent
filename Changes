@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - register_psgi, unregister_psgi, map_response, map_network_response
+            and unmap_all all return their invocant, to allow for method
+            chaining (Tom Hukins, github #2)
 
 0.026     2014-11-12 03:46:16Z
           - resolve test failure when a prereq is too old
