@@ -518,7 +518,7 @@ Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
 then examined. When no matches have been found, a 404 response is returned.
 
-This method returns the C<Test::LWP::UserAgent> object.
+This method returns the C<Test::LWP::UserAgent> object or class.
 
 =head2 C<map_network_response($request_description)>
 
@@ -565,7 +565,7 @@ a server so as to test your client code.
 You might find using L<Plack::Test> or L<Plack::Test::ExternalServer> easier
 for your needs, so check those out as well.
 
-This method returns the C<Test::LWP::UserAgent> object.
+This method returns the C<Test::LWP::UserAgent> object or class.
 
 =head2 C<unregister_psgi($domain, instance_only?)>
 
@@ -583,7 +583,7 @@ then add C<undef> as a mapping on your instance:
 
     $useragent->map_response($domain, undef);
 
-This method returns the C<Test::LWP::UserAgent> object.
+This method returns the C<Test::LWP::UserAgent> object or class.
 
 =head2 C<last_http_request_sent>
 
