@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          - report on the versions of more networking modules, to try to track
+            down mysterious failed network connections during testing
 
 0.027     2015-02-26 04:57:32Z
           - register_psgi, unregister_psgi, map_response, map_network_response
