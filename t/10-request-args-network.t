@@ -34,7 +34,7 @@ my $expected_content = $response->decoded_content;
         ':content_file' => $tmpfile->stringify,
     );
 
-    my $contents = $tmpfile->slurp;
+    my $contents = $tmpfile->slurp_utf8;
     is($contents, $expected_content, 'response body is saved to file (network responses)');
 
     is($response->content, '', 'response body is removed');

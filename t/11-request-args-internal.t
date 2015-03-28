@@ -35,7 +35,7 @@ use Test::LWP::UserAgent;
         ':content_file' => $tmpfile->stringify,
     );
 
-    my $contents = $tmpfile->slurp;
+    my $contents = $tmpfile->slurp_utf8;
     is($contents, 'all good!', 'response body is saved to file (internal responses)');
     is($response->content, '', 'response body is removed');
     cmp_deeply(
@@ -65,7 +65,7 @@ use Test::LWP::UserAgent;
 
     my $response = $useragent->mirror('http://foo.com', $tmpfile->stringify);
 
-    my $contents = $tmpfile->slurp;
+    my $contents = $tmpfile->slurp_utf8;
     is($contents, 'all good!', 'response body is saved to file (internal responses)');
     is($response->content, '', 'response body is removed');
     cmp_deeply(
