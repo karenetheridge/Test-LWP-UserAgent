@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More;
 BEGIN {
-    if ($ENV{NO_NETWORK_TESTING}
+    if ($ENV{NO_NETWORK_TESTING} and not $ENV{RELEASE_TESTING}
         or (not $ENV{AUTHOR_TESTING} and not $ENV{AUTOMATED_TESTING} and not $ENV{EXTENDED_TESTING})
     )
     {
