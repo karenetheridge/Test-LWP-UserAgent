@@ -1,4 +1,6 @@
-Revision history for Test-LWP-UserAgent
+Revision history for {{$dist->name}}
+
+{{$NEXT}}
 
 0.028     2015-04-10 22:38:29Z
           - report on the versions of more networking modules, to try to track
