@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
+
 BEGIN {
     if ($ENV{NO_NETWORK_TESTING} and not $ENV{RELEASE_TESTING}
         or (not $ENV{AUTHOR_TESTING} and not $ENV{AUTOMATED_TESTING} and not $ENV{EXTENDED_TESTING})
@@ -11,8 +12,11 @@ BEGIN {
     }
 }
 
-use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
+# if tests are getting to this point and then skip due to not being able to
+# reach this site, we know they are not setting NO_NETWORK_TESTING as they should.
+use Test::RequiresInternet ( 'www.iana.org' => 80 );
 
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;
 use URI;
