@@ -1,5 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
+{{$NEXT}}
+
 0.029     2015-05-23 03:43:46Z
           - add use of Test::RequiresInternet to avoid failing tests on
             smokers that are failing to set NO_NETWORK_TESTING when running
