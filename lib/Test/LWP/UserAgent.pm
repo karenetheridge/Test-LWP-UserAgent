@@ -18,7 +18,7 @@ use HTTP::Status qw(:constants status_message);
 use Try::Tiny;
 use Safe::Isa;
 use Carp;
-use namespace::clean;
+use namespace::clean -also => [qw(__isa_coderef __is_regexp)];
 
 my @response_map;
 my $network_fallback;
