@@ -69,8 +69,7 @@ sub map_response
     if (not $response->$_isa('HTTP::Response') and try { $response->can('request') })
     {
         my $oldres = $response;
-        $response = sub {
-            $oldres->request($_[0]) };
+        $response = sub { $oldres->request($_[0]) };
     }
 
     carp 'map_response: response is not a coderef or an HTTP::Response, it\'s a ',
