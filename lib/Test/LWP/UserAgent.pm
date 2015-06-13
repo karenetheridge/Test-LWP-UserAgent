@@ -629,7 +629,7 @@ This is the only method from L<LWP::UserAgent> that has been overridden, which
 processes the L<HTTP::Request>, sends to the network, then creates the
 L<HTTP::Response> object from the reply received. Here, we loop through your
 local and global domain registrations, and local and global mappings (in this
-order) and returns the first match found; otherwise, a simple 404 response is
+order) and returns the B<first match found>; otherwise, a simple 404 response is
 returned (unless C<network_fallback> was specified as a constructor option,
 in which case unmatched requests will be delivered to the network.)
 
