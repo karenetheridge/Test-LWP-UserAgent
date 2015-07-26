@@ -3,7 +3,7 @@ use warnings;
 package Test::LWP::UserAgent;
 # ABSTRACT: A LWP::UserAgent suitable for simulating and testing network calls
 # KEYWORDS: testing useragent networking mock server client
-# vim: set ts=8 sts=4 sw=4 tw=78 et :
+# vim: set ts=8 sts=4 sw=4 tw=115 et :
 
 our $VERSION = '0.030';
 
