@@ -371,7 +371,7 @@ the network, allowing an interception of that request and simulating a
 particular response.  This greatly facilitates testing of client networking
 code where the server follows a known protocol.
 
-The synopsis describes a classic case where you want to test how your
+The synopsis describes a typical case where you want to test how your
 application reacts to various responses from the server.  This module will let
 you send back various responses depending on the request, without having to
 set up a real server to test against.  This can be invaluable when you need to
