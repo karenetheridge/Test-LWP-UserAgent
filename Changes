@@ -1,6 +1,8 @@
 Revision history for Test-LWP-UserAgent
 
 {{$NEXT}}
+          - change network tests from hitting example.com to cpan.org, in the
+            hopes of getting past more testers' firewalls
 
 0.029     2015-05-23 03:43:46Z
           - add use of Test::RequiresInternet to avoid failing tests on
