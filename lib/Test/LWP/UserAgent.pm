@@ -91,17 +91,11 @@ sub map_network_response
 {
     my ($self, $request_description) = @_;
 
-    if (blessed $self)
-    {
-        # we cannot call ::request here, or we end up in an infinite loop
-        push @{$self->{__response_map}},
-            [ $request_description, sub { $self->SUPER::send_request($_[0]) } ];
-    }
-    else
-    {
-        push @response_map,
-            [ $request_description, sub { LWP::UserAgent->new->send_request($_[0]) } ];
-    }
+    push (
+        @{ blessed($self) ? $self->{__response_map} : \@response_map },
+        [ $request_description, $self->_response_send_request ],
+    );
+
     return $self;
 }
 
@@ -132,13 +126,7 @@ sub register_psgi
     carp 'register_psgi: app is not a coderef, it\'s a ', ref($app)
         unless __isa_coderef($app);
 
-    carp 'register_psgi: did you forget to load HTTP::Message::PSGI?'
-        unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
-
-    return $self->map_response(
-        $domain,
-        sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) },
-    );
+    return $self->map_response($domain, $self->_psgi_to_response($app));
 }
 
 sub unregister_psgi
@@ -314,6 +302,27 @@ sub send_request
     $self->{__last_http_response_received} = $response;
 
     return $response;
+}
+
+# turns a PSGI app into a subref returning an HTTP::Response
+sub _psgi_to_response
+{
+    my ($self, $app) = @_;
+
+    carp 'register_psgi: did you forget to load HTTP::Message::PSGI?'
+        unless HTTP::Request->can('to_psgi') and HTTP::Response->can('from_psgi');
+
+    return sub { HTTP::Response->from_psgi($app->($_[0]->to_psgi)) };
+}
+
+# returns a subref that returns an HTTP::Response from a real network request
+sub _response_send_request
+{
+    my $self = shift;
+
+    # we cannot call ::request here, or we end up in an infinite loop
+    return sub { $self->SUPER::send_request($_[0]) } if blessed $self;
+    return sub { LWP::UserAgent->new->send_request($_[0]) };
 }
 
 sub __isa_coderef
