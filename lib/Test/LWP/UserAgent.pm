@@ -45,7 +45,7 @@ sub new
 
 sub map_response
 {
-    my ($self, $request_description, $response) = @_;
+    my ($self, $request_specification, $response) = @_;
 
     if (not defined $response and blessed $self)
     {
@@ -53,14 +53,14 @@ sub map_response
         my $matched;
         foreach my $mapping (@{$self->{__response_map}})
         {
-            if ($mapping->[0] eq $request_description)
+            if ($mapping->[0] eq $request_specification)
             {
                 $matched = 1;
                 undef $mapping->[1];
             }
         }
 
-        push @{$self->{__response_map}}, [ $request_description, undef ]
+        push @{$self->{__response_map}}, [ $request_specification, undef ]
             if not $matched;
 
         return;
@@ -82,22 +82,22 @@ sub map_response
 
     if (blessed $self)
     {
-        push @{$self->{__response_map}}, [ $request_description, $response ];
+        push @{$self->{__response_map}}, [ $request_specification, $response ];
     }
     else
     {
-        push @response_map, [ $request_description, $response ];
+        push @response_map, [ $request_specification, $response ];
     }
     return $self;
 }
 
 sub map_network_response
 {
-    my ($self, $request_description) = @_;
+    my ($self, $request_specification) = @_;
 
     push (
         @{ blessed($self) ? $self->{__response_map} : \@response_map },
-        [ $request_description, $self->_response_send_request ],
+        [ $request_specification, $self->_response_send_request ],
     );
 
     return $self;
@@ -568,9 +568,9 @@ then examined. When no matches have been found, a 404 response is returned.
 
 This method returns the C<Test::LWP::UserAgent> object or class.
 
-=head2 C<map_network_response($request_description)>
+=head2 C<map_network_response($request_specification)>
 
-Same as C<map_response> above, only requests that match this description will
+Same as C<map_response> above, only requests that match this specification will
 not use a response that you specify, but instead uses a real L<LWP::UserAgent>
 to dispatch your request to the network.
 
