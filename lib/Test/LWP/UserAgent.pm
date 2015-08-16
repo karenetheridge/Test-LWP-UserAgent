@@ -18,7 +18,7 @@ use HTTP::Status qw(:constants status_message);
 use Try::Tiny;
 use Safe::Isa;
 use Carp;
-use namespace::clean 0.19 -also => [qw(__isa_coderef __is_regexp)];
+use namespace::clean 0.19 -also => [qw(__isa_coderef __is_regexp __isa_response)];
 
 my @response_map;
 my $network_fallback;
@@ -66,15 +66,19 @@ sub map_response
         return;
     }
 
-    if (not $response->$_isa('HTTP::Response') and try { $response->can('request') })
+    my ($isa_response, $error_message) = __isa_response($response);
+    if (not $isa_response)
     {
-        my $oldres = $response;
-        $response = sub { $oldres->request($_[0]) };
+        if (try { $response->can('request') })
+        {
+            my $oldres = $response;
+            $response = sub { $oldres->request($_[0]) };
+        }
+        else
+        {
+            carp 'map_response: ', $error_message;
+        }
     }
-
-    carp 'map_response: response is not a coderef or an HTTP::Response, it\'s a ',
-            (blessed($response) || 'non-object')
-        unless __isa_coderef($response) or $response->$_isa('HTTP::Response');
 
     if (blessed $self)
     {
@@ -274,7 +278,8 @@ sub send_request
     if (not $response->$_isa('HTTP::Response'))
     {
         carp 'response from coderef is not a HTTP::Response, it\'s a ',
-            (blessed($response) || 'non-object');
+            (blessed($response) || ( ref($response) ? ('unblessed ' . ref($response)) : 'non-reference' ));
+
         $response = LWP::UserAgent::_new_response($request, HTTP_INTERNAL_SERVER_ERROR, status_message(HTTP_INTERNAL_SERVER_ERROR));
     }
     else
@@ -335,6 +340,16 @@ sub __isa_coderef
 sub __is_regexp
 {
     re->can('is_regexp') ? re::is_regexp(shift) : ref(shift) eq 'Regexp';
+}
+
+# returns true if is expected type for all response mappings,
+# or (false, error message);
+sub __isa_response
+{
+    __isa_coderef($_[0]) || $_[0]->$_isa('HTTP::Response')
+        ? (1)
+        : (0, 'response is not a coderef or an HTTP::Response, it\'s a '
+                . (blessed($_[0]) || ( ref($_[0]) ? 'unblessed ' . ref($_[0]) : 'non-reference' )));
 }
 
 1;

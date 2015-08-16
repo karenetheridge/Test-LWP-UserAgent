@@ -51,7 +51,7 @@ use HTTP::Request::Common;
         '500',
         [],
         "500 Internal Server Error\n",
-        qr/response from coderef is not a HTTP::Response, it's a non-object at /,
+        qr/response from coderef is not a HTTP::Response, it's a non-reference at /,
     );
 }
 
@@ -79,12 +79,12 @@ sub test_send_request
 
     my $response;
     is(
-        $expected_warning
+        ($expected_warning
             ? exception {
                 like(warning { $response = $useragent->request($request) },
                     $expected_warning, 'expected warning')
                 }
-            : exception { $response = $useragent->request($request) },
+            : exception { $response = $useragent->request($request) }),
         undef,
         'no exceptions when processing request',
     );
