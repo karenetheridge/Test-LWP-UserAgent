@@ -528,18 +528,39 @@ parameters, headers etc) against the provided object.
 
 =back
 
-The response can be represented either as a literal L<HTTP::Response> object, or
-as a coderef that is run at the time of matching, with the request passed as
-the single argument:
+The response can be represented in multiple ways:
+
+=over
+
+=item *
+
+a literal L<HTTP::Response> object:
 
     HTTP::Response->new(...);
 
-or
+=item *
+
+as a coderef that is run at the time of matching, with the request passed as
+the single argument:
 
     sub {
         my $request = shift;
-        HTTP::Response->new(...);
+        return HTTP::Response->new(...);
     }
+
+=item *
+
+=for stopwords thusly
+
+a blessed object that implements the C<request> method, which will be saved as
+a coderef thusly (this allows you to use your own dispatcher implementation):
+
+    sub {
+        my $request = shift;
+        return $response->request($request);
+    }
+
+=back
 
 Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are

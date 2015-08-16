@@ -5,6 +5,7 @@ Revision history for Test-LWP-UserAgent
             hopes of getting past more testers' firewalls
           - factor a few bits of HTTP::Response-specific code out into private
             methods, to ease future refactoring
+          - some clarification and expansion to documentation
 
 0.029     2015-05-23 03:43:46Z
           - add use of Test::RequiresInternet to avoid failing tests on
