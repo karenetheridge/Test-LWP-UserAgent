@@ -528,7 +528,7 @@ parameters, headers etc) against the provided object.
 
 =back
 
-The response can be represented either as a literal L<HTTP::Request> object, or
+The response can be represented either as a literal L<HTTP::Response> object, or
 as a coderef that is run at the time of matching, with the request passed as
 the single argument:
 
