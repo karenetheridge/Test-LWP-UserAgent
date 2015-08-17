@@ -5,7 +5,7 @@ package Test::LWP::UserAgent;
 # KEYWORDS: testing useragent networking mock server client
 # vim: set ts=8 sts=4 sw=4 tw=115 et :
 
-our $VERSION = '0.030';
+our $VERSION = '0.031';
 
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);

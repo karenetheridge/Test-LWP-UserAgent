@@ -1,5 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
+{{$NEXT}}
+
 0.030     2015-08-17 00:07:37Z
           - change network tests from hitting example.com to cpan.org, in the
             hopes of getting past more testers' firewalls
