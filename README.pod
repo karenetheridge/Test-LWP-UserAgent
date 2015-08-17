@@ -8,7 +8,7 @@ Test::LWP::UserAgent - A LWP::UserAgent suitable for simulating and testing netw
 
 =head1 VERSION
 
-version 0.029
+version 0.030
 
 =head1 SYNOPSIS
 
@@ -48,7 +48,7 @@ the network, allowing an interception of that request and simulating a
 particular response.  This greatly facilitates testing of client networking
 code where the server follows a known protocol.
 
-The synopsis describes a classic case where you want to test how your
+The synopsis describes a typical case where you want to test how your
 application reacts to various responses from the server.  This module will let
 you send back various responses depending on the request, without having to
 set up a real server to test against.  This can be invaluable when you need to
@@ -181,18 +181,39 @@ parameters, headers etc) against the provided object.
 
 =back
 
-The response can be represented either as a literal L<HTTP::Request> object, or
-as a coderef that is run at the time of matching, with the request passed as
-the single argument:
+The response can be represented in multiple ways:
+
+=over
+
+=item *
+
+a literal L<HTTP::Response> object:
 
     HTTP::Response->new(...);
 
-or
+=item *
+
+as a coderef that is run at the time of matching, with the request passed as
+the single argument:
 
     sub {
         my $request = shift;
-        HTTP::Response->new(...);
+        return HTTP::Response->new(...);
     }
+
+=item *
+
+=for stopwords thusly
+
+a blessed object that implements the C<request> method, which will be saved as
+a coderef thusly (this allows you to use your own dispatcher implementation):
+
+    sub {
+        my $request = shift;
+        return $response->request($request);
+    }
+
+=back
 
 Instance mappings take priority over global (class method) mappings - if no
 matches are found from mappings added to the instance, the global mappings are
@@ -200,9 +221,9 @@ then examined. When no matches have been found, a 404 response is returned.
 
 This method returns the C<Test::LWP::UserAgent> object or class.
 
-=head2 C<map_network_response($request_description)>
+=head2 C<map_network_response($request_specification)>
 
-Same as C<map_response> above, only requests that match this description will
+Same as C<map_response> above, only requests that match this specification will
 not use a response that you specify, but instead uses a real L<LWP::UserAgent>
 to dispatch your request to the network.
 
@@ -306,7 +327,7 @@ This is the only method from L<LWP::UserAgent> that has been overridden, which
 processes the L<HTTP::Request>, sends to the network, then creates the
 L<HTTP::Response> object from the reply received. Here, we loop through your
 local and global domain registrations, and local and global mappings (in this
-order) and returns the first match found; otherwise, a simple 404 response is
+order) and returns the B<first match found>; otherwise, a simple 404 response is
 returned (unless C<network_fallback> was specified as a constructor option,
 in which case unmatched requests will be delivered to the network.)
 
@@ -421,17 +442,17 @@ L<Plack::Test>, L<Plack::Test::ExternalServer>
 
 Karen Etheridge <ether@cpan.org>
 
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2012 by Karen Etheridge.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
 =head1 CONTRIBUTOR
 
 =for stopwords Tom Hukins
 
 Tom Hukins <tom@eborcom.com>
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2012 by Karen Etheridge.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
