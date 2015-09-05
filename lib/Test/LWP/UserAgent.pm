@@ -731,14 +731,6 @@ throughout. It provides a method (C<last_http_request_sent>) to access the last
 L<HTTP::Request>, for testing things like the URI and headers that your code
 sent to L<LWP::UserAgent>.
 
-=head1 SUPPORT
-
-=for stopwords irc
-
-Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Test-LWP-UserAgent>
-(or L<bug-Test-LWP-UserAgent@rt.cpan.org>).
-I am also usually active on irc, as 'ether' at C<irc.perl.org>.
-
 =head1 ACKNOWLEDGEMENTS
 
 =for stopwords AirG Yury Zavarin mst
