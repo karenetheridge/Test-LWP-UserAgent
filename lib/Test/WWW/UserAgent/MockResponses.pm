@@ -1,4 +1,5 @@
 package Test::WWW::UserAgent::MockResponses;
+# ABSTRACT: Provide response mapping methods for Test::WWW::UserAgent classes
 
 use strict;
 use warnings;
@@ -15,7 +16,7 @@ my @response_map;
 my $network_fallback;
 
 has _response_map => (
-    is => 'ro',
+    is => 'rw',
     default => sub { [] },
 );
 
@@ -160,9 +161,9 @@ sub unregister_psgi
 
     if (blessed $self)
     {
-        $self->_response_map(
+        $self->_response_map( [
             grep { $_->[0] ne $domain } @{$self->_response_map}
-        );
+        ]);
 
         @response_map = grep { $_->[0] ne $domain } @response_map
             unless $instance_only;

@@ -62,11 +62,6 @@ cmp_deeply(
             last_http_response_received => undef,
             last_useragent => undef,
         ),
-        noclass(superhashof({
-            __last_http_request_sent => undef,
-            __last_http_response_received => undef,
-            __response_map => [],
-        })),
     ),
     'initial state (object)',
 );
@@ -125,11 +120,6 @@ cmp_deeply(
                 last_http_response_received => undef,
                 last_useragent => isa('LWP::UserAgent'),
             ),
-            noclass(superhashof({
-                __last_http_request_sent => undef,
-                __last_http_response_received => undef,
-                __response_map => [],
-            })),
         ),
         'initial state of object after sending requests with another instance',
     );

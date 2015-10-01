@@ -21,8 +21,7 @@ use Carp;
 use namespace::clean 0.19 -also => [qw(__isa_coderef __is_regexp __isa_response)];
 
 extends 'LWP::UserAgent';
-with 'Test::WWW::UserAgent::History';
-with 'Test::WWW::UserAgent::MockResponses';
+with    'Test::WWW::UserAgent::History', 'Test::WWW::UserAgent::MockResponses';
 
 sub BUILD
 {
@@ -33,23 +32,28 @@ sub BUILD
     $self->agent(undef) if defined $self->agent and $self->agent eq $self->_agent;
 }
 
+around send_request => sub {
+    my( $orig, $self, $request, @args ) = @_;
+
+    my $resp = $orig->($self, $request, @args );
+
+    $self->last_useragent($self);
+    $self->last_http_request_sent($request);
+    $self->last_http_response_received($resp);
+
+    return $resp;
+};
+
 sub send_request
 {
     my ($self, $request, $arg, $size) = @_;
 
     $self->progress('begin', $request);
     my $matched_response = $self->run_handlers('request_send', $request)
-        || $self->match_response_map($request);
+                        || $self->match_response_map($request);
 
-    $self->last_useragent($self);
-    $self->last_http_request_sent($request);
-
-    if (not defined $matched_response and $self->network_fallback )
-    {
-        my $response = $self->SUPER::send_request($request, $arg, $size);
-        $self->last_http_response_received($response);
-        return $response;
-    }
+    return $self->SUPER::send_request($request, $arg, $size)
+        if not defined $matched_response and $self->network_fallback;
 
     my $response = defined $matched_response
         ? $matched_response
@@ -113,8 +117,6 @@ sub send_request
 
     $self->run_handlers('response_done', $response);
     $self->progress('end', $response);
-
-    $self->last_http_response_received($response);
 
     return $response;
 }
