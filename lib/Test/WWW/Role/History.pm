@@ -1,4 +1,4 @@
-package Test::WWW::UserAgent::History;
+package Test::WWW::Role::History;
 
 use strict;
 use warnings;

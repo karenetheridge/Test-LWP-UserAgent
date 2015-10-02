@@ -22,7 +22,7 @@ use Carp;
 use namespace::clean 0.19 -also => [qw(__isa_coderef __is_regexp __isa_response)];
 
 use parent 'LWP::UserAgent';
-with    'Test::WWW::UserAgent::History', 'Test::WWW::UserAgent::MockResponses';
+with    'Test::WWW::Role::History', 'Test::WWW::Role::NetworkResponse';
 
 around new => sub {
     my( $orig, @args ) = @_;

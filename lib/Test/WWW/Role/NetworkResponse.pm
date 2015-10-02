@@ -1,4 +1,4 @@
-package Test::WWW::UserAgent::MockResponses;
+package Test::WWW::Role::NetworkResponse;
 # ABSTRACT: Provide response mapping methods for Test::WWW::UserAgent classes
 
 use strict;
