@@ -5,7 +5,7 @@ use warnings;
 
 use Scalar::Util qw(blessed reftype);
 
-use Moo::Role;
+use Role::Tiny;
 
 my $last_useragent;
 
@@ -17,13 +17,17 @@ sub last_useragent {
     $last_useragent;
 }
 
-has _last_http_request_sent => (
-    is => 'rw',
-);
+sub _last_http_request_sent {
+    my $self = shift;
+    $self->{__last_http_request_sent} = shift if @_;
+    $self->{__last_http_request_sent};
+}
 
-has _last_http_response_received => (
-    is => 'rw',
-);
+sub _last_http_response_received {
+    my $self = shift;
+    $self->{__last_http_response_received} = shift if @_;
+    $self->{__last_http_response_received};
+}
 
 sub last_http_request_sent
 {

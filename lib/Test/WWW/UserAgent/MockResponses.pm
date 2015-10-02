@@ -4,7 +4,7 @@ package Test::WWW::UserAgent::MockResponses;
 use strict;
 use warnings;
 
-use Moo::Role;
+use Role::Tiny;
 
 use Try::Tiny;
 use Scalar::Util qw(blessed reftype);
@@ -15,17 +15,21 @@ use Storable 'freeze';
 my @response_map;
 my $network_fallback;
 
-has _response_map => (
-    is => 'rw',
-    default => sub { [] },
-);
+sub _response_map {
+    my $self = shift;
+    
+    $self->{__response_map} = shift if @_;
 
-# behavior changed: won't check each time,
-# but is set at object creation time
-has network_fallback => (
-    is => 'rw',
-    default => sub { $network_fallback },
-);
+    $self->{__response_map} ||= [];
+}
+
+sub network_fallback {
+    my $self = shift;
+    
+    $self->{__network_fallback} = shift if @_;
+
+    defined $self->{__network_fallback} ? $self->{__network_fallback} : $network_fallback;
+}
 
 sub _all_response_map {
     my $self = shift;

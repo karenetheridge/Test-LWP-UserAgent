@@ -5,7 +5,8 @@ package Test::LWP::UserAgent;
 # KEYWORDS: testing useragent networking mock server client
 # vim: set ts=8 sts=4 sw=4 tw=115 et :
 
-use Moo;
+use Role::Tiny::With;
+use Class::Method::Modifiers;
 
 our $VERSION = '0.031';
 
@@ -20,17 +21,19 @@ use Safe::Isa;
 use Carp;
 use namespace::clean 0.19 -also => [qw(__isa_coderef __is_regexp __isa_response)];
 
-extends 'LWP::UserAgent';
+use parent 'LWP::UserAgent';
 with    'Test::WWW::UserAgent::History', 'Test::WWW::UserAgent::MockResponses';
 
-sub BUILD
-{
-    my ($self, $options) = @_;
+around new => sub {
+    my( $orig, @args ) = @_;
+    my $self = $orig->(@args);
 
     # strips default User-Agent header added by LWP::UserAgent, to make it
     # easier to define literal HTTP::Requests to match against
     $self->agent(undef) if defined $self->agent and $self->agent eq $self->_agent;
-}
+
+    return $self;
+};
 
 around send_request => sub {
     my( $orig, $self, $request, @args ) = @_;
