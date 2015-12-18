@@ -339,7 +339,7 @@ sub __isa_coderef
 
 sub __is_regexp
 {
-    re->can('is_regexp') ? re::is_regexp(shift) : ref(shift) eq 'Regexp';
+    re->can('is_regexp') ? re::is_regexp($_[0]) : ref($_[0]) eq 'Regexp';
 }
 
 # returns true if is expected type for all response mappings,
