@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More 0.88;
-use Test::Requires 'HTTP::Message::PSGI';
+use Test::Needs 'HTTP::Message::PSGI';
 use Test::Warnings;
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;
