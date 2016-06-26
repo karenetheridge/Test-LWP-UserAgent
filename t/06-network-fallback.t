@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More 0.88;
 
 BEGIN {
     if ($ENV{NO_NETWORK_TESTING} and not $ENV{RELEASE_TESTING}

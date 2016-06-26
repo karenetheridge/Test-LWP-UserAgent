@@ -3,7 +3,7 @@ use warnings;
 
 use Test::Requires 'HTTP::Message::PSGI';
 
-use Test::More;
+use Test::More 0.88;
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use HTTP::Response ();
