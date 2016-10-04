@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 package Test::LWP::UserAgent;
+# vim: set ts=8 sts=4 sw=4 tw=115 et :
 # ABSTRACT: A LWP::UserAgent suitable for simulating and testing network calls
 # KEYWORDS: testing useragent networking mock server client
-# vim: set ts=8 sts=4 sw=4 tw=115 et :
 
 our $VERSION = '0.031';
 
