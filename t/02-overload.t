@@ -56,7 +56,7 @@ use Test::LWP::UserAgent;
 }
 
 SKIP: {
-    eval 'require HTTP::Message::PSGI'
+    eval { require HTTP::Message::PSGI; 1 }
         or skip('HTTP::Message::PSGI is required for the remainder of these tests', 3);
 
     # mapped response is a coderef that turns a PSGI $env into an HTTP response
