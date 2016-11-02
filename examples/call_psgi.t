@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More 0.88;
 use Test::Needs 'HTTP::Message::PSGI';
-use Test::Warnings;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::LWP::UserAgent;
 use HTTP::Request::Common;
 

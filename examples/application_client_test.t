@@ -13,7 +13,7 @@ use warnings;
 use Test::More;
 BEGIN { plan skip_all => 'this example requires perl 5.10' if "$]" < '5.010'; }
 use Test::Needs qw(JSON::MaybeXS Moose);
-use Test::Warnings 0.009 ':all';
+use Test::Warnings 0.009 ':all', ':no_end_test';
 use Test::LWP::UserAgent;
 
 use lib 'examples';
@@ -53,4 +53,5 @@ is_deeply(\@ids, [], 'no ids returned for non-existent user');
 @ids = $client->get_indexes(user => 'barney');
 is_deeply(\@ids, [ 76 ], 'one id returned for regular user');
 
+had_no_warnings if $ENV{AUTHOR_TESTING};
 done_testing;

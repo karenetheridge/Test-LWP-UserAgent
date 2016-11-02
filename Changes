@@ -1,6 +1,8 @@
 Revision history for Test-LWP-UserAgent
 
 {{$NEXT}}
+          - warnings are only checked for in tests under AUTHOR_TESTING, so as
+            to not prevent installation when warnings occur in prerequisites.
 
 0.030     2015-08-17 00:07:37Z
           - change network tests from hitting example.com to cpan.org, in the
