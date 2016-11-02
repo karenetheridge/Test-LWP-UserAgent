@@ -5,7 +5,7 @@ package Test::LWP::UserAgent;
 # ABSTRACT: A LWP::UserAgent suitable for simulating and testing network calls
 # KEYWORDS: testing useragent networking mock server client
 
-our $VERSION = '0.031';
+our $VERSION = '0.032';
 
 use parent 'LWP::UserAgent';
 use Scalar::Util qw(blessed reftype);

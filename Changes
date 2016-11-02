@@ -1,5 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
+{{$NEXT}}
+
 0.031     2016-11-02 04:15:38Z
           - warnings are only checked for in tests under AUTHOR_TESTING, so as
             to not prevent installation when warnings occur in prerequisites.
