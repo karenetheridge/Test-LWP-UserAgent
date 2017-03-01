@@ -407,7 +407,7 @@ hook into this module; see the documentation for the individual interface
 methods.
 
 You can use a L<PSGI> app to handle the requests - see F<examples/call_psgi.t>
-in this dist, and also L</register_psgi> below.
+in this distribution, and also L</register_psgi> below.
 
 OR, you can route some or all requests through the network as normal, but
 still gain the hooks provided by this class to test what was sent and
@@ -482,9 +482,9 @@ C<< $useragent->network_fallback(<value?>) >>.
 =back
 
 B<All other methods below may be called on a specific object instance, or as a class method.>
-If called as on a blessed object, the action performed or data returned is
-limited to just that object; if called as a class method, the action or data is
-global.
+If the method invoked on a blessed object, the action performed or data returned is
+limited to just that object; if it is called as a class method, the action or data is
+global and affects all instances (although specific instances may have overrides; see below).
 
 =head2 C<map_response($request_specification, $http_response)>
 
