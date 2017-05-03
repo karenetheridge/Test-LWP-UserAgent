@@ -1,5 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
+{{$NEXT}}
+
 0.032     2017-05-03 22:57:18Z
           - convert network tests to using httpbin.org, to not rely on
             iana.org not changing their content
