@@ -1,6 +1,8 @@
 Revision history for Test-LWP-UserAgent
 
 {{$NEXT}}
+          - convert network tests to using httpbin.org, to not rely on
+            iana.org not changing their content
 
 0.031     2016-11-02 04:15:38Z
           - warnings are only checked for in tests under AUTHOR_TESTING, so as

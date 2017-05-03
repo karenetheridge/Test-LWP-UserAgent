@@ -14,7 +14,7 @@ BEGIN {
 
 # if tests are getting to this point and then skip due to not being able to
 # reach this site, we know they are not setting NO_NETWORK_TESTING as they should.
-use Test::RequiresInternet ( 'cpan.org' => 80 );
+use Test::RequiresInternet ( 'httpbin.org' => 80 );
 
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep;
@@ -26,7 +26,7 @@ use Test::LWP::UserAgent;
 # content to a file.
 
 my $useragent = Test::LWP::UserAgent->new(network_fallback => 1);
-my $response = $useragent->get('http://cpan.org/');
+my $response = $useragent->get('http://httpbin.org/get');
 my $expected_content = $response->decoded_content;
 
 {

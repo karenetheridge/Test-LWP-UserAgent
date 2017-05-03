@@ -14,7 +14,7 @@ BEGIN {
 
 # if tests are getting to this point and then skip due to not being able to
 # reach this site, we know they are not setting NO_NETWORK_TESTING as they should.
-use Test::RequiresInternet ( 'www.iana.org' => 80 );
+use Test::RequiresInternet ( 'httpbin.org' => 80 );
 
 use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::LWP::UserAgent;
@@ -22,9 +22,8 @@ use HTTP::Request::Common;
 use URI;
 
 # I use POST rather than GET everywhere so as to not process the "302
-# Redirect" response - there is no need, and the first response is much
-# shorter than the second.
-my $redirect_url = 'http://www.iana.org/domains/example/';
+# Redirect" response.
+my $redirect_url = 'http://httpbin.org/redirect-to?url=http%3A%2F%2Fhttpbin.org%2Fpost';
 
 # allow LWP::UserAgent to carp about unknown constructor arguments
 $^W = 1;
