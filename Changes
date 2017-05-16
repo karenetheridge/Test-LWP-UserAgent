@@ -1,6 +1,8 @@
 Revision history for Test-LWP-UserAgent
 
 {{$NEXT}}
+          - fix network tests that failed from 0.032, due to inadequate author
+            testing before release
 
 0.032     2017-05-03 22:57:18Z
           - convert network tests to using httpbin.org, to not rely on

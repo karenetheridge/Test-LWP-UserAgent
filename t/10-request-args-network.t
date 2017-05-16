@@ -35,7 +35,7 @@ my $expected_content = $response->decoded_content;
     my $tmpfile = Path::Tiny->tempfile;
 
     my $response = $useragent->get(
-        'http://cpan.org/',
+        'http://httpbin.org/get',
         ':content_file' => $tmpfile->stringify,
     );
 
@@ -47,7 +47,7 @@ my $expected_content = $response->decoded_content;
         $response,
         methods(
             [ header => 'X-Died' ] => undef,
-            [ header => 'Content-Type' ], => re(qr{^text/html}),
+            [ header => 'Content-Type' ], => re(qr{^application/json}),
             [ header => 'Client-Date' ] => ignore,
         ),
         'response headers look ok',
