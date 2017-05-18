@@ -1,5 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
+{{$NEXT}}
+
 0.033     2017-05-18 00:46:41Z
           - fix network tests that failed from 0.032, due to inadequate author
             testing before release
