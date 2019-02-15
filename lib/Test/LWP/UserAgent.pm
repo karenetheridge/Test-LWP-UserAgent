@@ -392,7 +392,7 @@ Then, in your tests:
 This module is a subclass of L<LWP::UserAgent> which overrides a few key
 low-level methods that are concerned with actually sending your request over
 the network, allowing an interception of that request and simulating a
-particular response.  This greatly facilitates testing of client networking
+particular response.  This greatly facilitates testing of networking client
 code where the server follows a known protocol.
 
 The synopsis describes a typical case where you want to test how your
@@ -446,7 +446,7 @@ this module (or a subclass) to send your request, or it cannot be caught and
 processed.
 
 One common mechanism to swap out the useragent implementation is via a
-lazily-built Moose attribute; if no override is provided at construction time,
+lazily-built Moose(-like) attribute; if no override is provided at construction time,
 default to C<< LWP::UserAgent->new(%options) >>.
 
 Additionally, most methods can be called as class methods, which will store
