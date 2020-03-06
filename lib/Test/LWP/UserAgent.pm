@@ -139,14 +139,14 @@ sub unregister_psgi
 
     if (blessed $self)
     {
-        @{$self->{__response_map}} = grep { $_->[0] ne $domain } @{$self->{__response_map}};
+        @{$self->{__response_map}} = grep $_->[0] ne $domain, @{$self->{__response_map}};
 
-        @response_map = grep { $_->[0] ne $domain } @response_map
+        @response_map = grep $_->[0] ne $domain, @response_map
             unless $instance_only;
     }
     else
     {
-        @response_map = grep { $_->[0] ne $domain } @response_map;
+        @response_map = grep $_->[0] ne $domain, @response_map;
     }
     return $self;
 }
