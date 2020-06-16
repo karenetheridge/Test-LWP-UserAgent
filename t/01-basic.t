@@ -154,6 +154,19 @@ cmp_deeply(
         'all mappings are now gone', 'GET', 'http://foo', '3000', 'success', { a => 1 },
             str('http://foo:3000/success?a=1'), '', '404',
     );
+
+	$MyApp::useragent->map_response(
+		methods(method => 'HEAD', uri => re (qr/foo/)),
+		HTTP::Response->new ('200'),
+	);
+
+    test_send_request(
+        'Test::Deep comparison / foo', 'HEAD', 'http://foo', '3000', 'fail', { a => 1 },
+            str('http://foo:3000/fail'), 'a=1', '200',  # globally, returning 500
+    );
+
+    $MyApp::useragent->unmap_all;
+
 }
 
 sub test_send_request

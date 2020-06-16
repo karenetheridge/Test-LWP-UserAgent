@@ -203,6 +203,9 @@ sub _match_request
 		return freeze($request) eq freeze($request_desc);
 	}
 
+	return Test::Deep::eq_deeply ($request, $request_desc)
+		if $request_desc->$_isa('Test::Deep::Cmp');
+
 	return $uri =~ $request_desc
 		if __is_regexp($request_desc);
 
@@ -529,6 +532,20 @@ returns a boolean indicating if there is a match.
 
 The L<HTTP::Request> object is matched identically (including all query
 parameters, headers etc) against the provided object.
+
+=item * L<Test::Deep> comparison
+
+Applies L<Test::Deep>'s C<eq_deeply> on request to detect match.
+It's up to caller to make it available.
+
+    use Test::Deep;
+	# matches any GET requests with query parameter bar=baz
+    my $match = methods (
+	    method => 'GET',
+		uri => methods ([query_param => 'bar'] => 'baz'),
+	),
+
+	$test_ua->map_response ($match => HTTP::Response->new('200'));
 
 =back
 
