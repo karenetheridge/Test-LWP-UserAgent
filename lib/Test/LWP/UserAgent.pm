@@ -191,6 +191,28 @@ sub network_fallback
     $network_fallback = $value;
 }
 
+sub _match_request
+{
+	my ($self, $request, $request_desc) = @_;
+
+	my $uri = $request->uri;
+
+	if ($request_desc->$_isa('HTTP::Request'))
+	{
+		local $Storable::canonical = 1;
+		return freeze($request) eq freeze($request_desc);
+	}
+
+	return $uri =~ $request_desc
+		if __is_regexp($request_desc);
+
+	return $request_desc->($request)
+		if __isa_coderef($request_desc);
+
+	$uri = URI->new($uri) unless $uri->$_isa('URI');
+	return $uri->host eq $request_desc;
+}
+
 sub send_request
 {
     my ($self, $request, $arg, $size) = @_;
@@ -206,28 +228,10 @@ sub send_request
         next if not defined $entry;
         my ($request_desc, $response) = @$entry;
 
-        if ($request_desc->$_isa('HTTP::Request'))
-        {
-            local $Storable::canonical = 1;
-            $matched_response = $response, last
-                if freeze($request) eq freeze($request_desc);
-        }
-        elsif (__is_regexp($request_desc))
-        {
-            $matched_response = $response, last
-                if $uri =~ $request_desc;
-        }
-        elsif (__isa_coderef($request_desc))
-        {
-            $matched_response = $response, last
-                if $request_desc->($request);
-        }
-        else
-        {
-            $uri = URI->new($uri) if not $uri->$_isa('URI');
-            $matched_response = $response, last
-                if $uri->host eq $request_desc;
-        }
+		next unless $self->_match_request ($request, $request_desc);
+
+		$matched_response = $response;
+		last;
     }
 
     $last_useragent = $self;
