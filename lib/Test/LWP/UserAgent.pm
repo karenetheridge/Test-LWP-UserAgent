@@ -203,6 +203,9 @@ sub _match_request
 		return freeze($request) eq freeze($request_desc);
 	}
 
+	return !! $request_desc->matching ($request)
+		if $request_desc->$_isa('HTTP::Config');
+
 	return Test::Deep::eq_deeply ($request, $request_desc)
 		if $request_desc->$_isa('Test::Deep::Cmp');
 
@@ -532,6 +535,16 @@ returns a boolean indicating if there is a match.
 
 The L<HTTP::Request> object is matched identically (including all query
 parameters, headers etc) against the provided object.
+
+=item * L<HTTP::Config> object
+
+    use HTTP::Config;
+	my $config = HTTP::Config->new;
+	$config->add (m_method => 'GET', m_secure => 0);
+
+	$test_ua->map_response ($config => HTTP::Response->new ('400'));
+
+See L<HTTP::Config> for details how to match request.
 
 =item * L<Test::Deep> comparison
 
