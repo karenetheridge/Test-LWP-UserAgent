@@ -1,6 +1,6 @@
 Revision history for Test-LWP-UserAgent
 
-{{$NEXT}}
+0.035     2022-01-15 03:45:06Z
           - fix network test that failed due to a broken redirect service
 
 0.034     2020-03-06 04:22:25Z
