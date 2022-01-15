@@ -1,6 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
 {{$NEXT}}
+          - use http rather than https URIs in network tests
 
 0.035     2022-01-15 03:45:06Z
           - fix network test that failed due to a broken redirect service
