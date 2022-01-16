@@ -1,5 +1,7 @@
 Revision history for Test-LWP-UserAgent
 
+{{$NEXT}}
+
 0.036     2022-01-16 04:11:38Z
           - use http rather than https URIs in network tests
 
