@@ -6,6 +6,8 @@ use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Deep 0.110;
 use Scalar::Util 'refaddr';
 
+use HTTP::Config;
+
 # simulates real code that we are testing
 {
     package MyApp;
@@ -154,6 +156,34 @@ cmp_deeply(
         'all mappings are now gone', 'GET', 'http://foo', '3000', 'success', { a => 1 },
             str('http://foo:3000/success?a=1'), '', '404',
     );
+
+	$MyApp::useragent->map_response(
+		methods(method => 'HEAD', uri => re (qr/foo/)),
+		HTTP::Response->new ('200'),
+	);
+
+    test_send_request(
+        'Test::Deep comparison / foo', 'HEAD', 'http://foo', '3000', 'fail', { a => 1 },
+            str('http://foo:3000/fail'), 'a=1', '200',  # globally, returning 500
+    );
+
+    $MyApp::useragent->unmap_all;
+
+	my $config = HTTP::Config->new;
+	$config->add (m_method => 'HEAD', _uri => qr/foo/);
+
+	$MyApp::useragent->map_response(
+		$config,
+		HTTP::Response->new ('201'),
+	);
+
+    test_send_request(
+        'HTTP::Config comparison / foo', 'HEAD', 'http://foo', '3000', 'fail', { a => 1 },
+            str('http://foo:3000/fail'), 'a=1', '201',  # globally, returning 500
+    );
+
+    $MyApp::useragent->unmap_all;
+
 }
 
 sub test_send_request

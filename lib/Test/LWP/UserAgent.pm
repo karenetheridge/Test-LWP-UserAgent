@@ -191,6 +191,34 @@ sub network_fallback
     $network_fallback = $value;
 }
 
+sub _match_request
+{
+	my ($self, $request, $request_desc) = @_;
+
+	my $uri = $request->uri;
+
+	if ($request_desc->$_isa('HTTP::Request'))
+	{
+		local $Storable::canonical = 1;
+		return freeze($request) eq freeze($request_desc);
+	}
+
+	return !! $request_desc->matching ($request)
+		if $request_desc->$_isa('HTTP::Config');
+
+	return Test::Deep::eq_deeply ($request, $request_desc)
+		if $request_desc->$_isa('Test::Deep::Cmp');
+
+	return $uri =~ $request_desc
+		if __is_regexp($request_desc);
+
+	return $request_desc->($request)
+		if __isa_coderef($request_desc);
+
+	$uri = URI->new($uri) unless $uri->$_isa('URI');
+	return $uri->host eq $request_desc;
+}
+
 sub send_request
 {
     my ($self, $request, $arg, $size) = @_;
@@ -206,28 +234,10 @@ sub send_request
         next if not defined $entry;
         my ($request_desc, $response) = @$entry;
 
-        if ($request_desc->$_isa('HTTP::Request'))
-        {
-            local $Storable::canonical = 1;
-            $matched_response = $response, last
-                if freeze($request) eq freeze($request_desc);
-        }
-        elsif (__is_regexp($request_desc))
-        {
-            $matched_response = $response, last
-                if $uri =~ $request_desc;
-        }
-        elsif (__isa_coderef($request_desc))
-        {
-            $matched_response = $response, last
-                if $request_desc->($request);
-        }
-        else
-        {
-            $uri = URI->new($uri) if not $uri->$_isa('URI');
-            $matched_response = $response, last
-                if $uri->host eq $request_desc;
-        }
+		next unless $self->_match_request ($request, $request_desc);
+
+		$matched_response = $response;
+		last;
     }
 
     $last_useragent = $self;
@@ -525,6 +535,30 @@ returns a boolean indicating if there is a match.
 
 The L<HTTP::Request> object is matched identically (including all query
 parameters, headers etc) against the provided object.
+
+=item * L<HTTP::Config> object
+
+    use HTTP::Config;
+	my $config = HTTP::Config->new;
+	$config->add (m_method => 'GET', m_secure => 0);
+
+	$test_ua->map_response ($config => HTTP::Response->new ('400'));
+
+See L<HTTP::Config> for details how to match request.
+
+=item * L<Test::Deep> comparison
+
+Applies L<Test::Deep>'s C<eq_deeply> on request to detect match.
+It's up to caller to make it available.
+
+    use Test::Deep;
+	# matches any GET requests with query parameter bar=baz
+    my $match = methods (
+	    method => 'GET',
+		uri => methods ([query_param => 'bar'] => 'baz'),
+	),
+
+	$test_ua->map_response ($match => HTTP::Response->new('200'));
 
 =back
 
